@@ -1,0 +1,109 @@
+@require: class-slydifi/slydifi
+@require: class-slydifi/theme/arctic
+@require: ruby/ruby
+@require: easytable/easytable
+@require: bibyfi/bibyfi
+@require: bibyfi/bibyfi-IEEETran
+@require: azmath/azmath
+@require: matrix/matrix
+@require: colorbox/colorbox
+@require: arrows/arrows
+@require: arrows/commands
+@require: fss/fss
+@require: fss/fonts
+@require: latexcmds/latexcmds
+@require: fss/style
+@require: base/list-ext
+@require: enumitem/enumitem
+
+let preset-math-font = `lmodern`
+
+let set-main-font name = fun ctx ->
+  ctx |> set-font Kana (name, 1., 0.)
+      |> set-font HanIdeographic (name, 1., 0.)
+      |> set-font OtherScript (name, 1., 0.)
+      |> set-font Latin (`lmroman`, 1., 0.)
+
+let set-font-metrics fsize ctx =
+  ctx |> set-font-size fsize
+      |> set-paragraph-margin (fsize *' 0.75) (fsize *' 0.75)
+      |> set-min-gap-of-lines 0pt
+      |> set-leading (fsize *' 1.4)
+
+let use-code-font = fun ctx ->
+      ctx |> set-main-font `system:JetBrainsMono-Medium`
+          |> set-font Latin (`system:JetBrainsMono-Medium`, 1., 0.)
+
+let use-italic-font = fun ctx ->
+      ctx |> set-main-font `system:HiraMinProN-W4`
+          |> set-font Latin (`Junicode-it`, 1., 0.)
+
+let use-italic-code-font = fun ctx ->
+      ctx |> set-main-font `system:JetBrainsMono-MediumItalic`
+          |> set-font Latin (`system:JetBrainsMono-MediumItalic`, 1., 0.)
+
+let use-bold-code-font = fun ctx ->
+      ctx |> set-main-font `system:JetBrainsMono-Bold`
+          |> set-font Latin (`system:JetBrainsMono-Bold`, 1., 0.)
+
+let slydifi-cfg =
+  (| SlydifiThemeArctic.default-config with
+    font-normal = SlydifiScheme.apply-font-cfg 
+      [ set-main-font `system:HiraMaruProN-W4`
+      ; set-math-font preset-math-font
+      ; set-font-metrics 20pt
+      ];
+    font-code = SlydifiScheme.apply-font-cfg
+      [ set-main-font `system:JetBrainsMono-Medium`
+      ; set-math-font preset-math-font
+      ; set-font Latin (`system:JetBrainsMono-Medium`, 1., 0.)
+      ];
+    font-bold = SlydifiScheme.apply-font-cfg
+      [ set-main-font `system:HiraMaruProN-W4`
+      ; set-math-font preset-math-font
+      ];
+    font-slide-title = SlydifiScheme.apply-font-cfg
+      [ set-main-font `system:.HiraKakuInterface-W5`
+      ; set-math-font preset-math-font
+      ; set-font-metrics 36pt
+      ];
+    font-slide-author = SlydifiScheme.apply-font-cfg
+      [ set-main-font `system:.HiraKakuInterface-W4`
+      ; set-math-font preset-math-font
+      ; set-font-metrics 24pt
+      ];
+    font-slide-date = 
+      SlydifiScheme.apply-font-cfg
+      [ set-main-font `system:.HiraKakuInterface-W4`
+      ; set-math-font preset-math-font
+      ; set-font-metrics 20pt
+      ];
+    font-section-title = 
+      SlydifiScheme.apply-font-cfg
+      [ set-main-font `system:.HiraKakuInterface-W4`
+      ; set-math-font preset-math-font
+      ; set-font-metrics 32pt
+      ];
+    font-frame-title = 
+      SlydifiScheme.apply-font-cfg
+      [ set-main-font `system:HiraMaruProN-W4`
+      ; set-math-font preset-math-font
+      ; set-font-metrics 28pt
+      ];
+    font-pagenum =
+      SlydifiScheme.apply-font-cfg
+      [ set-main-font `system:HiraMaruProN-W4`
+      ; set-math-font preset-math-font
+      ; set-font-metrics 16pt
+      ];
+    font-footnote =
+      SlydifiScheme.apply-font-cfg
+      [ set-main-font `system:HiraMaruProN-W4` 
+      ; set-math-font preset-math-font
+      ];
+    font-quote =
+      SlydifiScheme.apply-font-cfg
+      [ set-main-font `system:HiraMaruProN-W4` 
+      ; set-math-font preset-math-font
+      ];
+  |)

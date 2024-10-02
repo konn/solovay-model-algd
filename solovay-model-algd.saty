@@ -1,0 +1,97 @@
+@require: class-slydifi/theme/arctic
+@require: class-slydifi/slydifi
+@require: ruby/ruby
+@require: easytable/easytable
+@require: bibyfi/bibyfi
+@require: bibyfi/bibyfi-IEEETran
+@require: azmath/azmath
+@require: matrix/matrix
+@require: colorbox/colorbox
+@require: arrows/arrows
+@require: arrows/commands
+@require: fss/fss
+@require: fss/fonts
+@require: latexcmds/latexcmds
+@require: fss/style
+@require: base/list-ext
+@require: enumitem/enumitem
+@require: figbox/figbox
+
+@import: presets
+
+open LatexCmds
+open SlydifiOverlay
+open FigBox
+let-inline ctx \small il = 
+  let sz = get-font-size ctx *' 0.75
+  in  read-inline (ctx |> set-font-size sz) il
+
+in document '<
+  +set-config(slydifi-cfg);
+  +make-title(|
+    title = {|全ての実数の集合をLebesgue可測にする|〜Solovayモデル入門〜|};
+    author = {|\@mr_konn|};
+    date = {
+      |2024-0xAC
+      |alg-dチャンネル
+      |};
+  |);
+  
+  +section{|本日の話題|}<
+    +frame{本日の話題}<
+        +vskip(40pt);
+        +centering{\fontsize(50pt){\emph{任意の}実数の集合}}
+        +centering{\fontsize(40pt){を}}
+        +centering{\fontsize(50pt){\emph{Lebesgue可測}}}
+        +centering{\fontsize(40pt){にします！}}
+    >
+
+    +frame{？？？}<
+      +vskip(80pt);
+      +centering{\fontsize(100pt){？？？}}
+    >
+
+    +frame{非可測集合あるやろがい}<
+      +fig-center(vconcat 
+      [ include-image 15cm `./imgs/algd-thumb.jpg`
+      ; FigBox.textbox {\small{\text-color(Color.gray 0.5){※プライバシー保護のため画像・音声を一部加工しています}}}]);
+    >
+
+    +frame{非可測集合の作り方}<
+      +listing{
+        * 典型的な非可測集合\emph{Vitali集合}の「構成」は次のようだった：
+          \enumerate{
+            * \emph{選択公理}：${[0, 1] / \mathbb{Q}}の完全代表系${X}を取って……
+            * \emph{平行移動不変性}：可測なら測度零となる筈の${X}を平行移動して……
+            * \emph{可算加法性}：可算個の${X}で${\mathbb{R}}が覆えて${\mu(\mathbb{R}) = 0}となり矛盾！
+          }
+        ** \small{\textcolor(Color.gray 0.6){（他の非可測集合の例は alg_d の動画がいっぱいあるね）}}
+        * どれかを諦めれば「全ての実数の集合をLebesgue可測」にできるのでは？
+          ** \emph{可算加法性}はLebesgue測度の一番偉いところだったので諦めたくない
+          ** \emph{平行移動不変性}の成り立たない測度を測度と呼びたくない
+            *** \small{\textcolor(Color.gray 0.6){BanachのMeasure Problem；こっち諦めると、今回扱うより更に巨大な「可測基数」が出て来ます}}
+          ** 今回は\emph{選択公理を諦めます}。
+      }
+    >
+  >
+
+  +section{|5秒ではわからない強制法|}<
+    
+  >
+
+  +section{|巨大基数|}<
+    
+  >
+
+  +section{|Levy崩壊|}<
+    
+  >
+
+  +section{|Solovayモデルでの解析学|}<
+    
+  >
+
+  +section{|逆はどうなのか？|}<
+    
+  >
+>
