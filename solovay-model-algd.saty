@@ -378,7 +378,7 @@ in document '<
     >
     
     +frame{集合の宇宙}<
-      +fig-on-right(from-graphics-given-context (5.5cm, 9cm) universe-diagram)<
+      +fig-on-right(from-graphics-given-context (5.5cm, 10cm) universe-diagram)<
         +itemize<
           +item{\emph{集合の宇宙${V}}：集合全体の成すクラスのこと}<
             +item{${\ZFC}などの集合論公理系は個別の集合よりも${V}の性質を定めている}<>
@@ -396,7 +396,7 @@ in document '<
     >
 
     +frame{強制法}<
-      +fig-on-right(from-graphics-given-context (8cm, 9cm) generic-extension)<
+      +fig-on-right(from-graphics-given-context (8cm, 10cm) generic-extension)<
         +itemize<
           +item{\emph{強制法}：宇宙${V}に\emph{新たな元${G}}を付加した最小の外側の宇宙・\emph{強制拡大}\emph{${V[G]}}を創る技術}<
             +item{${G \nin V}であっても、${G}の「近似」全体が成す\emph{擬順序}${\mathbb{P}}は${V}にあるので、それを使って議論する}<>
