@@ -69,7 +69,8 @@ let multiverse-diagram ctx =
       |> terminate-path
       |> dashed-stroke 1pt (0.125cm, 2pt, 0.125cm) Color.black 
     ]
-  ; [ draw-math script-ctx (4cm +' script-size *' 0.25, 1cm +' script-size *' 0.25) ${\omega}]
+  ; [ draw-math script-ctx (4cm -' script-size *' 0.125, (0.0cm -' script-size)) ${0}
+  ;draw-math script-ctx (4cm +' script-size *' 0.25, 1cm +' script-size *' 0.25) ${\omega}]
   ; [draw-text (-0.1833260933cm, 0cm) 
       (read-inline ctx {
           \tikzy[
@@ -128,7 +129,11 @@ let universe-diagram ctx =
       |> terminate-path
       |> dashed-stroke 1pt (0.125cm, 2pt, 0.125cm) Color.black 
     ]
-  ; [ draw-math script-ctx ((2.5cm +' script-size *' 0.25), (1cm +' script-size *' 0.25)) ${\omega}]
+  ; [ draw-math script-ctx (2.5cm -' script-size *' 0.125, (0.0cm -' script-size)) ${0}
+    ; draw-math script-ctx ((2.5cm +' script-size *' 0.25), (1cm +' script-size *' 0.25)) ${\omega}
+    ; draw-math script-ctx ((2.5cm +' script-size *' 0.25), (2cm +' script-size *' 0.25)) ${\omega_1}
+    ; draw-math script-ctx ((2.5cm +' script-size *' 0.5), (2.5cm +' script-size *' 0.25)) ${\vdots}
+    ]
   ; [draw-text (-0.3284271247cm, 0cm) 
       (read-inline ctx {
           \tikzy[
