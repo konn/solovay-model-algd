@@ -35,7 +35,9 @@ let-inline ctx \small il =
   let sz = get-font-size ctx *' 0.75
   in  read-inline (ctx |> set-font-size sz) il
 
-  
+
+let-math \Pow = ${\mathop{\mathcal{P}}}
+let-math \defeq = ${\coloneq}
 let set-for-each-script setf ctx =
   ctx |> setf HanIdeographic |> setf Kana
       |> setf Latin |> setf OtherScript
@@ -51,19 +53,24 @@ let-inline ctx \inactive ?:kosa il = read-inline ctx {\textcolor(Color.gray (Opt
 let-math \DC = ${\mathrm{DC}}
 let-math \HOD = ${\mathrm{HOD}}
 let-math \On = ${\mathrm{On}}
-let universe-diagram ctx = 
+let-math \ZF = ${\mathrm{ZF}}
+let-math \ZFC = ${\mathrm{ZFC}}
+let-math \AC = ${\mathrm{AC}}
+let-math \LM = ${\mathrm{LM}}
+let-math \CC = ${\mathrm{CC}}
+let multiverse-diagram ctx = 
   open TikZyFi in
   let script-size = get-font-size ctx *' 0.75 in
   let script-ctx = ctx |> set-font-size script-size in
   List.concat
-  [(Arrow.read (Arrow.solid (|line-width = 0.05; head-size = 0.25|)) ctx)#draw (0pt, -4cm) (0pt, 4cm)
-  ; [draw-math script-ctx (0pt -' script-size *' 0.5, 4cm +' script-size *' 0.5) ${\On}]
-  ; [start-path (-1cm, -3cm) |> line-to (1cm, -3cm) 
+  [(Arrow.read (Arrow.solid (|line-width = 0.05; head-size = 0.25|)) ctx)#draw (4cm, 0cm) (4cm, 8cm)
+  ; [draw-math script-ctx (4cm -' script-size *' 0.5, 8cm +' script-size *' 0.5) ${\On}]
+  ; [start-path (3cm, 1cm) |> line-to (5cm, 1cm) 
       |> terminate-path
-      |> dashed-stroke 1pt (4pt, 2pt, 4pt) Color.black 
+      |> dashed-stroke 1pt (0.125cm, 2pt, 0.125cm) Color.black 
     ]
-  ; [ draw-math script-ctx (script-size *' 0.25, -3cm +' script-size *' 0.25) ${\omega}]
-  ; [draw-text (-4.1833260933cm, -4cm) 
+  ; [ draw-math script-ctx (4cm +' script-size *' 0.25, 1cm +' script-size *' 0.25) ${\omega}]
+  ; [draw-text (-0.1833260933cm, 0cm) 
       (read-inline ctx {
           \tikzy[
             spline?:[lw 1pt] 
@@ -108,6 +115,41 @@ let universe-diagram ctx =
       )
     ]
   ]
+
+let universe-diagram ctx = 
+  open TikZyFi in
+  let script-size = get-font-size ctx *' 0.75 in
+  let script-ctx = ctx |> set-font-size script-size in
+  (List.concat
+  [(Arrow.read (Arrow.solid (|line-width = 0.05; head-size = 0.25|)) ctx)#draw (2.5cm, 0cm) (2.5cm, 8cm)
+  ; [draw-math script-ctx ((2.5cm -' script-size *' 0.5), (8cm +' script-size *' 0.5)) ${\On}]
+  ; [draw-math script-ctx (5.125cm, (8cm +' script-size *' 0.5)) ${V}]
+  ; [start-path (1.5cm, 1cm) |> line-to (3.5cm, 1cm)
+      |> terminate-path
+      |> dashed-stroke 1pt (0.125cm, 2pt, 0.125cm) Color.black 
+    ]
+  ; [ draw-math script-ctx ((2.5cm +' script-size *' 0.25), (1cm +' script-size *' 0.25)) ${\omega}]
+  ; [draw-text (-0.3284271247cm, 0cm) 
+      (read-inline ctx {
+          \tikzy[
+            spline?:[lw 1pt] 
+              (List.map 
+                (fun t -> coord ((1cm *' t), (1cm *' (t *. t))))
+                [0.0; 0.2; 0.4; 0.6; 0.8; 1.0; 1.2; 1.4; 1.6; 1.8; 2.0; 2.2; 2.4; 2.6; 2.8; 2.8284271247]
+              )
+          ; spline?:[lw 1pt] 
+              (List.map 
+                (fun t -> 
+                  (let t = 0.0 -. t
+                  in coord ((1cm *' t) , (1cm *' (t *. t))))
+                )
+                (List.reverse [0.0; 0.2; 0.4; 0.6; 0.8; 1.0; 1.2; 1.4; 1.6; 1.8; 2.0; 2.2; 2.4; 2.6; 2.8; 2.8284271247])
+              )
+          ];
+        }
+      )
+    ]
+  ])
   
 
 in document '<
@@ -204,10 +246,41 @@ in document '<
   >
 
   +section{|集合の宇宙と強制法|}<
+    +frame{}<
+      +vspace(3cm);
+      +centering{\fontsize(80pt){ところで}}
+    >
+    +frame{}<
+      +vspace(1.5cm);
+      +centering{\fontsize(40pt){皆さんは}}
+      +centering{\fontsize(80pt){\emph{宇宙の本当の姿}}}
+      +centering{\fontsize(40pt){ご存知ですか？}}
+    >
+
+    +frame{}<
+      +vspace(3cm);
+      +centering{\fontsize(80pt){こちらです}}
+    >
+
+    +frame-nofooter{}<
+      +fig-center(from-graphics-given-context (5.5cm, 11cm) 
+        (fun ctx -> List.map (Gr.scale-graphics (0.0pt, 0.0pt) 1.5 1.25) (universe-diagram ctx)) );
+    >
+    
     +frame{集合の宇宙}<
-      +fig-on-right(from-graphics-given-context (5cm, 5cm) universe-diagram)<
+      +fig-on-right(from-graphics-given-context (5.5cm, 9cm) universe-diagram)<
         +itemize<
-          +item{\emph{集合の宇宙${V}}：}<>
+          +item{\emph{集合の宇宙${V}}：集合全体の成すクラスのこと}<
+            +item{${\ZFC}などの集合論公理系は個別の集合よりも${V}の性質を定めている}<>
+          >
+          +item{${V}は背骨に順序数のクラス${\On}を持ち、それに沿って冪集合を取って得られる（${\gamma}は極限）
+
+            \gather?:(AZMathEquation.notag)(${
+            | V_0 \defeq \emptyset, \mquad V_{\alpha + 1} \defeq \Pow(V_\alpha),
+              \mquad V_\gamma \defeq \bigcup_{\alpha < \gamma} V_\alpha
+            | V \defeq \bigcup_{\alpha \in \On} V_\alpha
+            |});
+          }<>
         >
       >
     >
