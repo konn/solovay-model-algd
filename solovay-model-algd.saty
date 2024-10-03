@@ -16,15 +16,99 @@
 @require: base/list-ext
 @require: enumitem/enumitem
 @require: figbox/figbox
+@require: arrows/arrows
+@require: base/list-ext
+@import: tikzyfi
+@import: utils
 
 @import: presets
 
+open Utils
 open LatexCmds
 open SlydifiOverlay
 open FigBox
+open EnumitemAlias
+open EnumitemFormat
+open EnumitemFormatUtil
+open SlydifiThemeArctic
 let-inline ctx \small il = 
   let sz = get-font-size ctx *' 0.75
   in  read-inline (ctx |> set-font-size sz) il
+
+  
+let set-for-each-script setf ctx =
+  ctx |> setf HanIdeographic |> setf Kana
+      |> setf Latin |> setf OtherScript
+
+let set-all-fonts fspec =
+  set-for-each-script (fun scr -> set-font scr fspec)
+
+let-inline ctx \emoji it =
+  let ctx1 = set-all-fonts (`fonts-noto-emoji:NotoEmoji-Regular`, 1., 0.) ctx in
+  read-inline ctx1 it
+let-block +from n blk =  '< +phantom(from n)<#blk;> >
+let-inline ctx \inactive ?:kosa il = read-inline ctx {\textcolor(Color.gray (Option.map-or 0.5 (fun x -> 1.0 -. x) kosa)){#il;}}
+let-math \DC = ${\mathrm{DC}}
+let-math \HOD = ${\mathrm{HOD}}
+let-math \On = ${\mathrm{On}}
+let universe-diagram ctx = 
+  open TikZyFi in
+  let script-size = get-font-size ctx *' 0.75 in
+  let script-ctx = ctx |> set-font-size script-size in
+  List.concat
+  [(Arrow.read (Arrow.solid (|line-width = 0.05; head-size = 0.25|)) ctx)#draw (0pt, -4cm) (0pt, 4cm)
+  ; [draw-math script-ctx (0pt -' script-size *' 0.5, 4cm +' script-size *' 0.5) ${\On}]
+  ; [start-path (-1cm, -3cm) |> line-to (1cm, -3cm) 
+      |> terminate-path
+      |> dashed-stroke 1pt (4pt, 2pt, 4pt) Color.black 
+    ]
+  ; [ draw-math script-ctx (script-size *' 0.25, -3cm +' script-size *' 0.25) ${\omega}]
+  ; [draw-text (-4.1833260933cm, -4cm) 
+      (read-inline ctx {
+          \tikzy[
+            spline?:[lw 1pt] 
+              (List.map 
+                (fun t -> coord (1cm *' t, 1cm *' (t *. t)))
+                [0.0; 0.2; 0.4; 0.6; 0.8; 1.0; 1.2; 1.4; 1.6; 1.8; 2.0; 2.2; 2.4; 2.6; 2.8; 2.8284271247]
+              )
+          ; spline?:[lw 1pt] 
+              (List.map 
+                (fun t -> 
+                  (let t = 0.0 -. t
+                  in coord (1cm *' t, 1cm *' (t *. t)))
+                )
+                (List.reverse [0.0; 0.2; 0.4; 0.6; 0.8; 1.0; 1.2; 1.4; 1.6; 1.8; 2.0; 2.2; 2.4; 2.6; 2.8; 2.8284271247])
+              )
+          ; spline?:[lw 1pt] 
+          (List.map 
+            (fun t -> coord (1cm *' t, 1cm *' (10.0 *. t *. t -. 18.0 *. t +. 9.0)))
+            [1.0; 1.2; 1.4; 1.6; 1.7426149773]
+          )
+          ; spline?:[lw 1pt] 
+          (List.map 
+            (fun t -> (
+                let t = 0.0 -. t
+                in coord (1cm *' t, 1cm *' (10.0 *. t *. t +. 18.0 *. t +. 9.0))))
+            (List.reverse [1.0; 1.2; 1.4; 1.6; 1.7426149773])
+          )
+          ; spline?:[lw 1pt] 
+          (List.map 
+            (fun t -> coord (1cm *' t, 1cm *' (0.0625 *. t *. t +. 1.875 *. t -. 0.9375)))
+            [1.0; 1.05; 1.1; 1.15; 1.2; 1.5; 2.0; 2.5; 3.0; 3.5; 4.1833260933]
+          )
+          ; spline?:[lw 1pt] 
+          (List.map 
+            (fun t -> (
+              let t = 0.0 -. t
+              in coord (1cm *' t, 1cm *' (0.0625 *. t *. t -. 1.875 *. t -. 0.9375))))
+            (List.reverse [1.0; 1.05; 1.1; 1.15; 1.2; 1.5; 2.0; 2.5; 3.0; 3.5; 4.1833260933])
+          )
+          ];
+        }
+      )
+    ]
+  ]
+  
 
 in document '<
   +set-config(slydifi-cfg);
@@ -54,29 +138,79 @@ in document '<
     +frame{非可測集合あるやろがい}<
       +fig-center(vconcat 
       [ include-image 15cm `./imgs/algd-thumb.jpg`
-      ; FigBox.textbox {\small{\text-color(Color.gray 0.5){※プライバシー保護のため画像・音声を一部加工しています}}}]);
+      ; FigBox.textbox {\small{\inactive{※プライバシー保護のため画像・音声を一部加工しています}}}
+      ]);
     >
 
-    +frame{非可測集合の作り方}<
-      +listing{
-        * 典型的な非可測集合\emph{Vitali集合}の「構成」は次のようだった：
-          \enumerate{
-            * \emph{選択公理}：${[0, 1] / \mathbb{Q}}の完全代表系${X}を取って……
-            * \emph{平行移動不変性}：可測なら測度零となる筈の${X}を平行移動して……
-            * \emph{可算加法性}：可算個の${X}で${\mathbb{R}}が覆えて${\mu(\mathbb{R}) = 0}となり矛盾！
-          }
-        ** \small{\textcolor(Color.gray 0.6){（他の非可測集合の例は alg_d の動画がいっぱいあるね）}}
-        * どれかを諦めれば「全ての実数の集合をLebesgue可測」にできるのでは？
-          ** \emph{可算加法性}はLebesgue測度の一番偉いところだったので諦めたくない
-          ** \emph{平行移動不変性}の成り立たない測度を測度と呼びたくない
-            *** \small{\textcolor(Color.gray 0.6){BanachのMeasure Problem；こっち諦めると、今回扱うより更に巨大な「可測基数」が出て来ます}}
-          ** 今回は\emph{選択公理を諦めます}。
-      }
+    +frame-nofooter?:(8){非可測集合の作り方}<
+      +itemize<
+        +item{典型的な非可測集合\emph{Vitali集合}の「構成」は次のようだった：}<
+          +from(2)<+item?:(dot-arabic){\emph{選択公理}：${[0, 1] / \mathbb{Q}}の完全代表系${X}を取って……}<>>
+          +from(3)<+item?:(dot-arabic){\emph{平行移動不変性}：可測なら測度零となる筈の${X}を平行移動して……}<>>
+          +from(4)<+item?:(dot-arabic){\emph{可算加法性}：可算個の${X}で${\mathbb{R}}が覆えて${\mu(\mathbb{R}) = 0}となり矛盾！}<>>
+          +from(4)<+item{\small{\inactive?:(0.4){（他の非可測集合の例は alg_d の動画がいっぱいあるね）}}}<>>
+         >
+        +from(5)<
+          +item{どれかを諦めれば「全ての実数の集合をLebesgue可測」にできるのでは？}<
+            +from(6)<+item{\emph{可算加法性}はLebesgue測度の一番偉いところだったので諦めたくない}<>>
+            +from(7)<+item{\emph{平行移動不変性}の成り立たない測度を測度と呼びたくない}<
+              +item{\small{\inactive?:(0.4){BanachのMeasure Problem；こっち諦めると、今回扱うより更に巨大な「可測基数」が出て来ます}}}<>
+            >>
+            +from(8)<+item{今回は\emph{選択公理を諦めます}（Solovay）。}<>>
+          >
+        >
+      >
+    >
+
+    +frame{選択公理を諦めます}<
+      +vspace(1cm);
+      +fig-center(vconcat [
+        include-image 20cm `./imgs/reimu-marisa-ac.jpg`
+      ; FigBox.textbox {\small{\inactive{※プライバシー保護のため画像・音声を一部加工しています}}}
+      ]);
+    >
+    
+    +frame{でも……}<
+      +vspace(1cm);
+      +centering{\fontsize(40pt){でも}}
+      +centering{\fontsize(50pt){\emph{「外側」の宇宙}}}
+      +centering{\fontsize(40pt){では}}
+      +centering{\fontsize(50pt){\emph{選択公理を認めます}}}
+    >
+    +frame{選択公理を認めます}<
+      +vspace(1cm);
+      +fig-center(vconcat [
+        include-image 20cm `./imgs/reimu-marisa-shocked.jpg`
+      ; FigBox.textbox {\small{\inactive{※プライバシー保護のため画像・音声を一部加工しています}}}
+      ]);
+    >
+
+    +frame?:(8){どゆこと？}<
+      +itemize?:(paren-arabic)<
+        +item{まず\emph{普通に選択公理を仮定}します}<
+          +from(2)<+item?:(listing-itemfmt){そうしないと通らない議論が沢山ある\inactive{（選択公理ちゃんマジ公理）}}<>>
+        >
+        +from(3)<+item{まず、「\emph{今ある宇宙} ${V}」をぶっ壊して「\emph{大きな宇宙}${V[G]}」を創ります}<>>
+        +from(4)<+item{\emph{「大きな宇宙${V[G]}」は選択公理を満たし}非可測集合がありますが……}<>>
+        +from(5)<+item{${V[G]}の内側の「\emph{小宇宙${L(\mathbb{R}^{V[G]})}}」を見ると……}<
+          +from(6)<+item?:(listing-itemfmt){そこには\emph{可測集合しかありません}！}<
+            +item?:(listing-itemfmt){必然的に選択公理も破れている}<>
+          >>
+          +from(7)<+item?:(listing-itemfmt){\emph{従属選択公理}はなりたっているので、ある程度マトモな解析学はできます}<>>
+          +from(8)<+item?:(listing-itemfmt){うれしい \emoji{✌}('ω'\emoji{✌} )三\emoji{✌}('ω')\emoji{✌}三( \emoji{✌}'ω')\emoji{✌}}<>>
+        >>
+      >
     >
   >
 
-  +section{|5秒ではわからない強制法|}<
-    
+  +section{|集合の宇宙と強制法|}<
+    +frame{集合の宇宙}<
+      +fig-on-right(from-graphics-given-context (5cm, 5cm) universe-diagram)<
+        +itemize<
+          +item{\emph{集合の宇宙${V}}：}<>
+        >
+      >
+    >
   >
 
   +section{|巨大基数|}<
@@ -91,7 +225,7 @@ in document '<
     
   >
 
-  +section{|逆はどうなのか？|}<
+  +section{|本当に到達不能基数は必要？|}<
     
   >
 >

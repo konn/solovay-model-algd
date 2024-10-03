@@ -1,0 +1,665 @@
+@require: gr
+@require: base/base
+@require: base/tree-map
+@require: base/tree-set
+@require: base/ord
+@require: base/length
+@require: base/string
+@require: base/list-ext
+@require: base/option-ext
+@require: base/fn
+@require: base/random
+@require: base/tuple
+@require: Color
+@require: arrows/arrows
+
+@import: utils
+@import: dlist
+@import: algorithms
+
+type direction 
+  = North | South | East | West 
+  | NorthEast | NorthWest
+  | SouthEast | SouthWest
+  | Center
+type shape = Plain | Circle | Rect
+type path-style = (|
+  stroke-color: color;
+  line-width: length;
+  phantom: bool;
+|)
+type node-style = (|
+  shape: shape;
+  fill-color: color;
+  stroke-color: color;
+  padding: length;
+  name: string option;
+  distance: length option;
+  style: context -> context;
+  phantom: bool;
+|)
+type config = (|
+    unit-length: length;
+    default-node-style : node-style;
+    default-path-style: path-style;
+    path-offset: length;
+    |)
+type matrix-config = (|
+  unit-length: length;
+  matrix-name: string;
+  default-node-style : node-style;
+  default-path-style: path-style;
+  path-offset: length;
+|)
+
+% A line determined by ax + by + c = 0
+type line = LineABC of (|a: float; b: float; c: float|)
+
+type position =
+  | Absolute of point 
+  | Relative of direction * string
+  | Between of position * position
+  | Intersect of (position * position) * (position * position)
+  | Projection of position * (position * position)
+
+type matrix-node = (|name : string option; shape : shape;|)
+let phantom p x = (|x with phantom = p|)
+
+module TikZyFi : sig
+  type node
+  type element
+  val matrix: string ?-> (node list) list -> element
+  val node-at: (node-style -> node-style) list ?-> position -> inline-text -> element
+  val arrow: (path-style -> path-style) list ?-> position -> position -> element
+  val polyline: (path-style -> path-style) list ?-> position list -> element
+  val spline: (path-style -> path-style) list ?-> position list -> element
+  val empty: node
+  val node: (node-style -> node-style) list ?-> inline-text -> node
+  val pc: color -> path-style -> path-style
+  val tc: color -> 'a -> 'a 
+          constraint 'a :: (|style : context -> context|) 
+  val lw: length -> path-style -> path-style
+  val fc: color -> node-style -> node-style
+  val lc: color -> node-style -> node-style
+  val distance: length -> node-style -> node-style
+  val named: string -> node-style -> node-style
+  val circle: node-style -> node-style
+  val rect: node-style -> node-style
+  val plain: node-style -> node-style
+  val padding: length -> node-style -> node-style
+  val style: (context -> context) list -> node-style -> node-style
+  val default: config
+  val default-matrix: matrix-config
+  val default-node-style: node-style
+  val default-path-style: path-style
+  val coord: point -> position
+  val between: position -> position -> position
+  val center-of: string -> position
+  val intersect: (position * position) -> (position * position) -> position
+  val proj: position -> (position * position) -> position
+  val north-of: string -> position
+  val south-of: string -> position
+  val west-of: string -> position
+  val east-of: string -> position
+  val north-west-of: string -> position
+  val north-east-of: string -> position
+  val south-west-of: string -> position
+  val south-east-of: string -> position
+  val override-node: string list -> (node-style -> node-style) list -> element list -> element list
+  direct \matrix: [matrix-config?; (node list) list] inline-cmd
+  direct \tikzy: [config?; element list] inline-cmd
+end = struct
+  open Gr
+  open Random
+  open Algorithms
+  open Utils
+
+  type extent = (|width : length; height: length; depth: length|)
+  let extent-of inl = 
+      let (w, h, d) = get-natural-metrics inl
+      in (|width = w; height = h; depth = d|)
+
+  let default-node-style: node-style = 
+    (|shape = Plain; padding = 5pt
+    ; stroke-color = Color.black
+    ; fill-color = Color.white
+    ; name = None
+    ; distance = None
+    ; style = fun ctx -> ctx
+    ; phantom = false
+    |)
+
+  let default-path-style: path-style = 
+    (| 
+      line-width = 0.5pt;
+      stroke-color = Color.black;
+      phantom = false;
+    |)
+
+  let padding n = fun x -> (|x with padding = n|)
+  let named name = fun opt -> (|opt with name = Some(name)|)
+  let distance d = fun x -> (| x with distance = Some(d) |)
+
+  let len-ord = Ord.make 
+        (fun x y -> (if x <' y
+          then Lt
+          else if x >' y then Gt else Eq)
+        )
+  let default : config = (|unit-length = 1cm ; default-node-style = default-node-style; default-path-style = default-path-style; path-offset = -2pt |)
+
+  let fc c = fun x -> (| x with fill-color = c |)
+  let lc c = fun x -> (| x with stroke-color = c |)
+  let pc c = fun x -> (| x with stroke-color = c|)
+  let tc c = fun x -> (| x with style = fun ctx -> x#style ctx |> set-text-color c|)
+  let lw l = fun x -> (| x with line-width = l|)
+  let path-offset l = fun x -> (| x with path-offset = l|)
+  let circle = fun x -> (| x with shape = Circle|)
+  let rect = fun x -> (| x with shape = Rect|)
+  let plain = fun x -> (| x with shape = Plain|)
+  let style xs = fun x -> (| x with style = fun ctx -> Utils.apps xs (x#style ctx) |)
+
+  let graphics-extent grs = 
+    let ((min-x, min-y), (max-x, max-y)) = 
+        Option.unwrap-or ((0pt, 0pt), (0pt, 0pt))
+          (fold-map
+            None
+            (fun l r ->
+              (match (l, r) with
+              | (None, None) -> None
+              | (Some(bb), None) -> Some(bb)
+              | (None, Some(bb)) -> Some(bb)
+              | (Some((xmin, ymin), (xmax, ymax)), Some((xmin1, ymin1), (xmax1, ymax1))) ->
+                  Some(
+                    (Length.min xmin xmin1, Length.min ymin ymin1),
+                    (Length.max xmax xmax1, Length.max ymax ymax1)
+                  )
+              )
+            ) 
+            (fun gr -> Some(get-graphics-bbox gr))
+            grs
+          )
+    in (|bbox = ((min-x, min-y), (max-x, max-y))
+        ; width = max-x -' min-x; height = max-y -' min-y|)
+
+  let render-graphics grs =
+    let extent = graphics-extent grs
+    in  inline-graphics extent#width extent#height 0pt
+          (fun pt -> List.map (shift-graphics (sub-pt pt (Pair.fst extent#bbox))) grs)
+
+  let default-pads = (3pt, 3pt, 3pt, 3pt)
+
+  let plain = fun style -> (|style with shape = Plain|)
+
+  let empty-style: node-style = (|default-node-style with padding=0pt; shape=Plain; distance = None|)
+  type node = Node of (|style : node-style -> node-style; body: inline-text|)
+  let empty = Node (|style = Fn.const empty-style; body = {}|)
+  let node ?:styler body = Node (|style = Option.map-or Fn.id Utils.apps styler; body = body|)
+  type raw-node = (|position: position; style: node-style -> node-style; body: inline-text|)
+  type abs-box-node = (|position: point; style: node-style; body: inline-boxes|)
+  type raw-path = (|
+    style: path-style -> path-style;
+    start: position;
+    points: position list
+  |)
+  type raw-spline = (|
+    style: path-style -> path-style;
+    start: position;
+    points: position list
+  |)
+
+  type element 
+    = Matrix of string option * (node list) list
+    | ANode of raw-node
+    | Arrow of (path-style -> path-style) * position * position
+    | LineSegments of raw-path
+    | CatmullRomSpline of raw-spline
+
+  let matrix ?:name rows = Matrix (name, rows)
+  let node-at ?:styler position body = 
+        ANode 
+          (|position = position
+          ; style = Option.map-or Fn.id Utils.apps styler
+          ; body = body
+          |)
+  let arrow ?:styler from to = Arrow (Option.map-or  Fn.id  Utils.apps styler, from, to)
+  let polyline ?:styler ls = match ls with
+        | [] -> panic `polyline: empty line!`
+        | (x :: xs) -> LineSegments (|
+              style = Option.map-or Fn.id Utils.apps styler; start = x; points = xs|)
+  let spline ?:styler ls = match ls with
+        | [] -> panic `empty line!`
+        | (x :: xs) -> CatmullRomSpline (|
+              style = Option.map-or Fn.id Utils.apps styler; start = x; points = xs|)
+
+  let pads-of style = (style#padding, style#padding, style#padding, style#padding)
+
+  let locate-rect ((x0, y0), (x1, y1)) dir =
+        match dir with
+        | Center -> ((x0 +' x1) *' 0.5, (y0 +' y1) *' 0.5)
+        | North  -> ((x0 +' x1) *' 0.5, y1)
+        | South -> ((x0 +' x1) *' 0.5, y0)
+        | East  -> (x1, (y0 +' y1) *' 0.5)
+        | West  -> (x0, (y0 +' y1) *' 0.5)
+        | NorthEast -> (x1, y1)
+        | NorthWest -> (x0, y1)
+        | SouthEast -> (x1, y0)
+        | SouthWest -> (x0, y0)
+
+  let locate-plain = locate-rect
+  let locate-circle ((x0, y0), (x1, y1)) dir =
+    let r = (x1 -' x0) *' 0.5
+    in let center = ((x0 +' x1) *' 0.5, (y0 +' y1) *' 0.5)
+    in let pi = 3.141592653589793238462
+    in let deg = 
+        match dir with
+        | Center -> None
+        | North -> Some(pi /. 2.0)
+        | South -> Some(pi /. (-2.0))
+        | East -> Some(0.0)
+        | West -> Some(pi)
+        | NorthEast -> Some(pi /. 4.0)
+        | NorthWest -> Some(3.0 *. pi /. 4.0)
+        | SouthEast -> Some(pi /. (-4.0))
+        | SouthWest -> Some(5.0 *. pi /. 4.0)
+    in match deg with
+       | None  -> center
+       | Some(deg) -> Utils.add-pt center (r *' cos deg, r *' sin deg)
+
+
+  let draw-node-shape-with f style = 
+      inline-frame-outer (pads-of style) 
+      (fun pt w h d ->
+        (let circle = f style pt w h d
+        in [ stroke 1pt style#stroke-color circle 
+           ; fill style#fill-color circle 
+           ]
+        )
+      )
+
+  let circled = 
+    draw-node-shape-with
+      (fun style (x, y) w h d ->
+        (let center = (x +' w *' 0.5, y +' (h -' d) *' 0.5) 
+        in let r = Length.max w (h -' d) *' 0.5 +' style#padding
+        in Gr.circle center r
+        )
+      )
+
+  let rectify = 
+    draw-node-shape-with
+    (fun style (x, y) w h d ->
+      ( let llc = (x, y -' d)
+        in let urc = (x +' w, y +' h)
+        in Gr.rectangle llc urc
+      )
+    )
+
+  let to-geometric-node-with l gr = l (get-graphics-bbox gr)
+
+  % In the absolute coordinate system
+  let locator-of shape =
+    match shape with
+    | Plain   -> to-geometric-node-with locate-plain
+    | Rect    -> to-geometric-node-with locate-rect
+    | Circle  -> to-geometric-node-with locate-circle
+
+  let process-node-raw ctx cfg node =
+    let style = node#style cfg#default-node-style in
+    let it = node#body in 
+    let pads = (style#padding, style#padding, style#padding, style#padding)  in
+    let ctx2 = ctx |> style#style in
+    let body = read-inline ctx2 it in 
+    let node0 = match style#shape with
+        | Plain   -> read-inline ctx2 it
+        | Rect    -> rectify style body
+        | Circle  -> circled style body
+    in let node = 
+          if style#phantom
+          then 
+            (
+              let (w,h,d) = get-natural-metrics node0
+              in inline-graphics w h d (fun _ -> []) 
+            )
+          else node0
+    in (node, style)
+
+  let process-node ctx cfg (Node node) = process-node-raw ctx cfg node
+
+  let calc-center (xstart, ystart) ib =
+    let ext = extent-of ib
+      in let center-x = xstart -' ext#width *' 0.5
+      in let center-y = ystart
+      in (center-x, center-y)
+
+  let pair-app app app2 = fun (l, r) (l1, r1) -> (app l l1, app2 r r1)
+
+  let place-matrix-nodes ctx cfg xss =
+    let dx = cfg#unit-length in
+    let dy = cfg#unit-length in
+    let ibs = List.map (List.map (process-node ctx cfg)) (List.reverse xss) in
+    let extents: (extent list) list = 
+          List.map (List.map (Fn.compose extent-of Pair.fst)) ibs
+    in let xoffs: length list = 
+          prescan-left
+            (fun off w -> off +' dx +' w)
+            0pt
+              (List.map 
+                (Fn.compose (Option.unwrap-or 0pt)
+                  (Fn.compose
+                    (List.max len-ord)
+                    (List.map (fun ext -> ext#width))
+                  )
+                )
+                (pad-transpose (|width=0pt;height=0pt;depth=0pt|) extents)
+              )
+    in let yoffs: length list =
+          prescan-lefti
+            (fun yn off ht -> off +' dy +' ht)
+            0pt
+            (List.map 
+              (Fn.compose (Option.unwrap-or 0pt)
+                (Fn.compose (List.max len-ord) 
+                  (List.map (fun ext -> ext#height))
+                )
+              )
+              extents
+            )
+    in let dic-dl = 
+          fold-zipi 
+            DList.empty DList.append
+            (fun yn ystart ->
+              fold-zipi 
+                DList.empty DList.append
+                (fun xn xstart (ib, style) ->
+                  ( let name =
+                       match style#name with
+                        | Some(name) -> name
+                        | None -> cfg#matrix-name ^ `-` ^ arabic xn ^ `-` ^ arabic yn
+                    in let node = 
+                          (|position = Absolute (calc-center (xstart, ystart) ib)
+                          ; body = ib
+                          ; style = style
+                          |)
+                    in DList.singleton (name, node)
+                  )
+                )
+                xoffs
+            )
+            yoffs
+            ibs
+    in TreeMap.of-list String.ord (DList.to-list dic-dl)
+
+  let make-diagram ctx paths = []
+  let as-matrix-config: string -> config -> matrix-config = fun nam cfg ->
+      (|default-node-style = cfg#default-node-style
+      ; default-path-style = cfg#default-path-style
+      ; unit-length = cfg#unit-length
+      ; matrix-name = nam
+      ; path-offset = cfg#path-offset
+      |)
+  let default-matrix = as-matrix-config `mat` default
+
+  let draw-abs-box-node bnode = draw-text bnode#position bnode#body
+
+  let center-of ((x1 ,y1), (x2, y2)) = 
+      ((x1 +' x2) *' 0.5, (y1 +' y2) *' 0.5)
+
+  let line-thru (x1, y1) (x2, y2) = 
+    let a = (y2 -' y1) /' 1pt
+    in let b = (x1 -' x2) /' 1pt
+    in let c = ((x2 /' 1pt) *. (y1  /' 1pt) -. (x1 /' 1pt) *. (y2 /' 1pt))
+    in LineABC (|a = a; b = b; c = c|)
+
+  let calc-intersect (LineABC l1) (LineABC l2) =
+    let det = l1#a *. l2#b -. l2#a *. l1#b
+    in let x = (l1#b *. l2#c -. l2#b *. l1#c) /. det
+    in let y = (l2#a *. l1#c -. l1#a *. l2#c) /. det
+    in (1pt *' x, 1pt *' y)
+
+  let calc-projection (x0, y0) (LineABC l) =
+    let d = (x0 /' 1pt) *. l#b -. (y0 /' 1pt) *. l#a
+    in calc-intersect (LineABC l) (LineABC (|a = -1.0 *. l#b; b = l#a; c = d|))
+
+  let proj pt (src, tgt) = Projection (pt, (src, tgt))
+
+  let dir-of pad dir targ =
+    let center = center-of (get-graphics-bbox targ#body)
+    in let endpt = 
+          locator-of targ#style#shape targ#body dir
+    in let (dx0, dy0) = Utils.sub-pt endpt center
+    in let theta = atan2 (dy0 /' 1pt) (dx0 /' 1pt)
+    in let dxy = 
+          Utils.add-pt (dx0, dy0) 
+            ( pad *' cos theta
+            , pad *' sin theta
+            )
+    in Utils.add-pt endpt dxy
+
+  let-rec get-dir-of pad poss pos =
+      match pos with
+      | Absolute pt -> pt
+      | Relative (dir, parent) ->
+        ( let targ = 
+          Option.expect (`No target node: ` ^ parent)
+          (TreeMap.get String.ord parent poss)
+        in dir-of pad dir targ
+        )
+      | Between (src, tgt) -> 
+        let src-pt = get-dir-of pad poss src
+        in let tgt-pt = get-dir-of pad poss tgt
+        in Utils.scale-pt (Utils.add-pt tgt-pt src-pt) 0.5
+      | Intersect ((src1, tgt1), (src2, tgt2)) ->
+          let src1 = get-dir-of pad poss src1 in
+          let tgt1 = get-dir-of pad poss tgt1 in
+          let src2 = get-dir-of pad poss src2 in
+          let tgt2 = get-dir-of pad poss tgt2 in
+          let l1 = line-thru src1 tgt1 in
+          let l2 = line-thru src2 tgt2 in
+          calc-intersect l1 l2
+      | Projection (pt, (src, tgt)) ->
+          let pt = get-dir-of pad poss pt in
+          let src = get-dir-of pad poss src in
+          let tgt = get-dir-of pad poss tgt in
+          calc-projection pt (line-thru src tgt)
+
+
+  let intersect l1 l2 = Intersect (l1, l2)
+  let coord pt = Absolute pt
+  let between src tgt = Between (src, tgt)
+  let center-of s = Relative (Center, s)
+  let north-of s = Relative (North, s)
+  let south-of s = Relative (South, s)
+  let west-of s = Relative (West, s)
+  let east-of s = Relative (East, s)
+  let north-east-of s = Relative (NorthEast, s)
+  let north-west-of s = Relative (NorthWest, s)
+  let south-east-of s = Relative (SouthEast, s)
+  let south-west-of s = Relative (SouthWest, s)
+
+  let resolve-raw-node ctx cfg (name, raw) poss =
+    let ext = extent-of raw#body
+    in let center = 
+          get-dir-of 
+            (Option.unwrap-or cfg#unit-length raw#style#distance) 
+            poss raw#position
+    in let position = calc-center center raw#body
+    in let graphic = draw-text position raw#body
+    in let node2 = (|position = position; body = graphic; style = raw#style|)
+    in let (x, y) = position
+    in TreeMap.insert String.ord name node2 poss
+
+  let-rec toEdges-pos p =
+    match p with
+      | Absolute _ -> []
+      | Relative (_, targ) -> [targ]
+      | Between (src, tgt) -> List.append (toEdges-pos src) (toEdges-pos tgt)
+      | Intersect ((src1, tgt1), (src2, tgt2)) -> 
+          concat-map toEdges-pos [src1; tgt1; src2; tgt2]
+      | Projection (pt, (src, tgt)) -> 
+          concat-map toEdges-pos [pt; src; tgt]
+  let toEdges b = toEdges-pos b#position
+
+  let dfs = topsort String.ord toEdges
+
+  let process-elem ctx cfg key elt =
+      match elt with
+      | Matrix (mname, rows) -> 
+          (place-matrix-nodes ctx
+            (as-matrix-config (Option.unwrap-or key mname) cfg)
+            rows
+          , DList.empty
+          , DList.empty
+          , DList.empty
+          )
+      | ANode raw ->
+          (let (node, style) = process-node-raw ctx cfg raw
+          in let style0 = raw#style cfg#default-node-style
+          in let name = Option.unwrap-or key style0#name 
+          in let final = (|position = raw#position; style = style; body = node|)
+          in  ( TreeMap.of-list String.ord [(name, final)]
+              , DList.empty
+              , DList.empty, DList.empty
+              )
+          )
+      | Arrow(opt, src, tgt) -> (TreeMap.empty, DList.singleton (opt, src, tgt), DList.empty, DList.empty)
+      | LineSegments(pts) -> (TreeMap.empty, DList.empty, DList.singleton pts, DList.empty)
+      | CatmullRomSpline(sp) -> (TreeMap.empty, DList.empty, DList.empty, DList.singleton sp)
+
+  let display env =
+      List.fold-right
+        (fun (k, v) shown -> 
+            `(` ^ k ^ `, ` 
+              ^ `Some(` ^ v ^ `)` 
+              ^ `); ` ^ shown)
+        String.empty
+        (Utils.concat-map 
+          (fun (nam, b) -> 
+              List.map (fun edge -> (nam, edge)) (toEdges b)
+          ) 
+          (TreeMap.to-list env)
+        )
+
+  let phantom-gr gr =
+    (
+      let ((x0,y0), (x1, y1)) = get-graphics-bbox gr in
+      draw-text (x0, y0) (inline-graphics (x1 -' x0) (y1 -' y0) 0pt (fun _ -> []))
+    )
+
+  let draw-arrow ctx cfg node-dic (styler, src, tgt) =
+    let src-pt = get-dir-of cfg#path-offset node-dic src
+    in let style = styler cfg#default-path-style
+    in let tgt-pt = get-dir-of cfg#path-offset node-dic tgt
+    in let theta = atan2-pt (sub-pt tgt-pt src-pt)
+    in let drawer = Arrow.read (Arrow.solid (|line-width = 0.05; head-size = 0.3|)) ctx
+    in let wrap = if style#phantom then List.map phantom-gr else Fn.id
+    in DList.of-list (wrap (drawer#draw src-pt tgt-pt))
+
+  let draw-line-segments ctx cfg node-dic raw =
+    let src-pt = get-dir-of cfg#path-offset node-dic raw#start
+    in let pts = List.map (get-dir-of cfg#path-offset node-dic) raw#points
+    in let style = raw#style cfg#default-path-style
+    in let wrap = if style#phantom then phantom-gr else Fn.id
+    in wrap (stroke style#line-width style#stroke-color (poly-line src-pt pts))
+
+  let extend-spline p0 p1 p2 p3 =
+      let v0 = add-pt (scale-pt (sub-pt p2 p0) (1.0 /. 6.0)) p1 in
+      let v1 = add-pt (scale-pt (sub-pt p1 p3) (1.0 /. 6.0)) p2 in
+      bezier-to v0 v1 p2
+
+  let draw-splines ctx cfg node-dic raw =
+    let cfg2 = (|cfg with unit-length = -5pt|)
+    in let src-pt = get-dir-of -2pt node-dic raw#start
+    in let pts = List.map (get-dir-of -2pt node-dic) raw#points
+    in let style = raw#style cfg#default-path-style
+    in let-rec go 
+          | p0 p1 p2 (p3 :: ps) acc = 
+              extend-spline p0 p1 p2 p3 acc
+                |> go p1 p2 p3 ps
+          | p0 p1 p2 [] acc = 
+              extend-spline p0 p1 p2 (add-pt p2 (scale-pt (sub-pt p2 p1) 0.25)) acc
+    in let wrap = if style#phantom then phantom-gr else Fn.id
+    in match pts with
+        | [] -> DList.empty
+        | (tgt :: []) -> DList.singleton (wrap (stroke style#line-width style#stroke-color (line src-pt tgt)))
+        | (p1 :: p2 :: ps) ->
+          DList.singleton (
+            wrap (stroke 
+              style#line-width style#stroke-color
+              ( terminate-path
+                (go (add-pt src-pt (scale-pt (sub-pt src-pt p1) 0.25)) 
+                    src-pt p1 (p2 :: ps) (start-path src-pt))
+              ))
+          )
+
+  let make-tikzy ctx cfg elems =
+    let uuid = `#!tikz-` ^ arabic (random())
+    in let (ini-nodes, arrows0, linsegs, splines) = 
+          fold-mapi 
+            (TreeMap.empty, DList.empty, DList.empty, DList.empty) 
+            (fun (a1, b1, c1, d1) (a2, b2, c2, d2) ->
+              ( union String.ord a1 a2, DList.append b1 b2
+              , DList.append c1 c2, DList.append d1 d2
+              )
+            ) 
+            (fun n -> process-elem ctx cfg (uuid ^ `@` ^ arabic n))
+            elems
+    in let arrows = DList.to-list arrows0
+    in let sorted: (string * raw-node) list = 
+          concat 
+          (Option.expect 
+            (`Cycle detected! ` ^ display ini-nodes) 
+            (dfs ini-nodes)
+          )
+    in let node-dic = 
+          List.fold-right (resolve-raw-node ctx cfg) TreeMap.empty sorted
+    in let node-grs = List.map (fun (_, node) -> node#body) 
+              (TreeMap.to-list node-dic)
+    in let arrow-grs =
+          DList.to-list
+          (fold-map DList.empty DList.append 
+            (draw-arrow ctx cfg node-dic) arrows
+          )
+    in let line-grs =
+        List.map (draw-line-segments ctx cfg node-dic) (DList.to-list linsegs)
+    in let spline-grs =
+          DList.to-list
+          (fold-map DList.empty DList.append 
+            (draw-splines ctx cfg node-dic) 
+            (DList.to-list splines)
+          )
+    in render-graphics (List.concat [node-grs; arrow-grs; line-grs; spline-grs])
+
+  let-inline ctx \matrix ?:cfg0 xss =
+    let cfg = Option.unwrap-or default-matrix cfg0
+    in make-tikzy ctx cfg [matrix ?:(`mat`) xss]
+
+  let-inline ctx \tikzy ?:cfg0 elems =
+    let cfg = Option.unwrap-or default cfg0
+    in make-tikzy ctx cfg elems
+  
+  let override-node targs stylers nodes =
+        let styler = Utils.apps stylers in
+        let targs = TreeSet.of-list String.ord targs in
+        let go-node (Node raw) = Node 
+              (|raw with style = fun x ->
+                  (let style0 = raw#style x in
+                    if Option.map-or false (TreeSet.mem String.ord targs) style0#name
+                    then styler style0
+                    else style0
+                  )
+              |)
+        in let-rec 
+          go | (ANode raw) = 
+                ANode (|raw with style = fun x ->
+                    (let style0 = raw#style x in
+                      if Option.map-or false (TreeSet.mem String.ord targs) style0#name
+                      then styler style0
+                      else style0
+                    )
+                |)
+             | (Matrix (name, rows)) = Matrix (name, List.map (List.map go-node) rows)
+             | (LineSegments a) = LineSegments a
+             | (CatmullRomSpline a) = CatmullRomSpline a
+             | (Arrow a) = Arrow a
+        in List.map go nodes
+end
