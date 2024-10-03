@@ -35,7 +35,7 @@ let-inline ctx \small il =
   let sz = get-font-size ctx *' 0.75
   in  read-inline (ctx |> set-font-size sz) il
 
-
+let emph-color = SlydifiThemeArctic.default-config#color-emph
 let-math \Pow = ${\mathop{\mathcal{P}}}
 let-math \defeq = ${\coloneq}
 let set-for-each-script setf ctx =
@@ -58,6 +58,41 @@ let-math \ZFC = ${\mathrm{ZFC}}
 let-math \AC = ${\mathrm{AC}}
 let-math \LM = ${\mathrm{LM}}
 let-math \CC = ${\mathrm{CC}}
+let mid-space-ratio = 0.1875
+let gr-slash-m thk vlen fsize color =
+
+  % 基準となる横の位置 (h) 及び 縦の位置 (v) の座標．
+  let hmin = (0.0pt -' fsize) *' 0.2 in
+  let h0 = 0pt in
+  let hmax = fsize *' 0.2 in
+  let va = vlen in
+
+  % 結ぶことになる点の座標．
+  let (x0, y0) = (5pt, va) in
+  let (x1, y1) = (-5pt, 0.0pt -' va) in
+
+  let path =
+    start-path (x0, y0)
+      |> line-to (x1, y1)
+      |> terminate-path
+  in
+  let xmin = hmin in
+  let xmax = hmax in
+  (
+    [ draw-text (0pt, 0pt) (read-inline (get-initial-context 2pt (command \math) |> set-text-color Color.white) {${/}})
+    ; stroke thk color path],
+    (xmin, 0.0pt -' vlen), (xmax, vlen),
+    (fun _ -> 0pt)
+  )
+let-math \quot over under =
+  open AZMathParens in
+  let over = math-transform (raise-inline 2.5pt) MathOrd over in
+  let under = math-transform (raise-inline -2.5pt) MathOrd under in
+  let lparen = empty-bracket-l in
+  let mparen = paren-scheme (gr-slash-m 0.75pt) half-height-default in
+  let rparen = empty-bracket-r in
+  math-paren-with-middle lparen rparen mparen [${\mrquad!(mid-space-ratio)#over\mrquad!(mid-space-ratio)};  ${\mrquad!(mid-space-ratio)#under\mrquad!(mid-space-ratio)}]
+
 let multiverse-diagram ctx = 
   open TikZyFi in
   let script-size = get-font-size ctx *' 0.75 in
@@ -86,6 +121,76 @@ let multiverse-diagram ctx =
                   in coord (1cm *' t, 1cm *' (t *. t)))
                 )
                 (List.reverse [0.0; 0.2; 0.4; 0.6; 0.8; 1.0; 1.2; 1.4; 1.6; 1.8; 2.0; 2.2; 2.4; 2.6; 2.8; 2.8284271247])
+              )
+          ; spline?:[lw 1pt] 
+          (List.map 
+            (fun t -> coord (1cm *' t, 1cm *' (10.0 *. t *. t -. 18.0 *. t +. 9.0)))
+            [1.0; 1.2; 1.4; 1.6; 1.7426149773]
+          )
+          ; spline?:[lw 1pt] 
+          (List.map 
+            (fun t -> (
+                let t = 0.0 -. t
+                in coord (1cm *' t, 1cm *' (10.0 *. t *. t +. 18.0 *. t +. 9.0))))
+            (List.reverse [1.0; 1.2; 1.4; 1.6; 1.7426149773])
+          )
+          ; spline?:[lw 1pt] 
+          (List.map 
+            (fun t -> coord (1cm *' t, 1cm *' (0.0625 *. t *. t +. 1.875 *. t -. 0.9375)))
+            [1.0; 1.05; 1.1; 1.15; 1.2; 1.5; 2.0; 2.5; 3.0; 3.5; 4.1833260933]
+          )
+          ; spline?:[lw 1pt] 
+          (List.map 
+            (fun t -> (
+              let t = 0.0 -. t
+              in coord (1cm *' t, 1cm *' (0.0625 *. t *. t -. 1.875 *. t -. 0.9375))))
+            (List.reverse [1.0; 1.05; 1.1; 1.15; 1.2; 1.5; 2.0; 2.5; 3.0; 3.5; 4.1833260933])
+          )
+          ];
+        }
+      )
+    ]
+  ]
+
+let generic-extension ctx = 
+  open TikZyFi in
+  let script-size = get-font-size ctx *' 0.75 in
+  let script-ctx = ctx |> set-font-size script-size in
+  List.concat
+  [(Arrow.read (Arrow.solid (|line-width = 0.05; head-size = 0.25|)) ctx)#draw (4cm, 0cm) (4cm, 8cm)
+  ; [draw-math script-ctx (4cm -' script-size *' 0.5, 8cm +' script-size *' 0.5) ${\On}]
+  ; [start-path (3cm, 1cm) |> line-to (5cm, 1cm) 
+      |> terminate-path
+      |> dashed-stroke 1pt (0.125cm, 2pt, 0.125cm) Color.black 
+    ]
+  ; [ draw-math script-ctx (4cm -' script-size *' 0.125, (0.0cm -' script-size)) ${0}
+  ;draw-math script-ctx (4cm +' script-size *' 0.25, 1cm +' script-size *' 0.25) ${\omega}]
+  ; [ draw-math script-ctx (7.25cm, 8cm +' script-size *' 0.5) ${V[G]}
+    ; draw-math script-ctx (5.5cm, 8cm +' script-size *' 0.5) ${V}
+    ]
+  ; [ Gr.circle (4.5cm +' script-size *' 0.25, 4.5cm -' script-size *' 0.5) 3pt
+        |> fill emph-color
+    ; draw-math script-ctx (4.5cm, 4.5cm) ${\mathbb{P}}
+    ]
+  ; [ Gr.circle (6cm +' script-size *' 0.25, 4.5cm -' script-size *' 0.5) 3pt
+        |> fill emph-color
+    ; draw-math script-ctx (6cm, 4.5cm) ${G}
+    ]
+  ; [draw-text (-0.1833260933cm, 0cm) 
+      (read-inline ctx {
+          \tikzy[
+            spline?:[lw 1pt] 
+              (List.map 
+                (fun t -> coord (1cm *' t, 1cm *' (t *. t)))
+                [0.0; 0.2; 0.4; 0.6; 0.8; 1.0]
+              )
+          ; spline?:[lw 1pt] 
+              (List.map 
+                (fun t -> 
+                  (let t = 0.0 -. t
+                  in coord (1cm *' t, 1cm *' (t *. t)))
+                )
+                (List.reverse [0.0; 0.2; 0.4; 0.6; 0.8; 1.0])
               )
           ; spline?:[lw 1pt] 
           (List.map 
@@ -278,12 +383,32 @@ in document '<
           +item{\emph{集合の宇宙${V}}：集合全体の成すクラスのこと}<
             +item{${\ZFC}などの集合論公理系は個別の集合よりも${V}の性質を定めている}<>
           >
-          +item{${V}は背骨に順序数のクラス${\On}を持ち、それに沿って冪集合を取って得られる（${\gamma}は極限）
+          +item{${V}は\emph{順序数全体のクラス${\On}}に沿って空集合から\emph{繰り返し冪集合を取って}得られる：
 
             \gather?:(AZMathEquation.notag)(${
             | V_0 \defeq \emptyset, \mquad V_{\alpha + 1} \defeq \Pow(V_\alpha),
-              \mquad V_\gamma \defeq \bigcup_{\alpha < \gamma} V_\alpha
+              \mquad V_\gamma \defeq \bigcup_{\alpha < \gamma} V_\alpha \mhquad (\gamma: \text!{limit}),
             | V \defeq \bigcup_{\alpha \in \On} V_\alpha
+            |});
+          }<>
+        >
+      >
+    >
+
+    +frame{強制法}<
+      +fig-on-right(from-graphics-given-context (8cm, 9cm) generic-extension)<
+        +itemize<
+          +item{\emph{強制法}：宇宙${V}に\emph{新たな元${G}}を付加した最小の外側の宇宙・\emph{強制拡大}\emph{${V[G]}}を創る技術}<
+            +item{${G \nin V}であっても、${G}の「近似」全体が成す\emph{擬順序}${\mathbb{P}}は${V}にあるので、それを使って議論する}<>
+            +item{${ℙ}の元は自由度によって順序づけられており、${G}は${ℙ}の\emph{超フィルター}になる}<>
+          >
+          +item{${V[G]}は、${ℙ}-値集合の宇宙${V^ℙ}を${G}で割った物：
+          \gather?:(AZMathEquation.notag)(${
+            | V^{ℙ}_0 \defeq \emptyset, \mquad V^{ℙ}_{\alpha + 1} \defeq \Pow(V^{ℙ}_\alpha \times ℙ),
+              \mquad V^{ℙ}_\gamma \defeq \bigcup_{\alpha < \gamma} V^{ℙ}_\alpha,
+            | V^{ℙ} \defeq \bigcup_{\alpha \in \On} V^{ℙ}_\alpha,
+              \mqquad 
+              V[G] \cong \quot{V^ℙ}{G}
             |});
           }<>
         >

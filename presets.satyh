@@ -16,7 +16,8 @@
 @require: base/list-ext
 @require: enumitem/enumitem
 
-let preset-math-font = `lmodern`
+let preset-math-font = `euler`
+% let preset-math-font = `lmodern`
 
 let set-main-font name = fun ctx ->
   ctx |> set-font Kana (name, 1., 0.)
