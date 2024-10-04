@@ -671,7 +671,7 @@ in document '<
     >
 
     +frame{ほとんど至るところランダム}<
-      +lem<
+      +lem?*?:(`lem:ae-random`)<
         +p{${M \subseteq N}を${\p{2^{ℵ_0}}^M < ℵ_1^N}となるような内部モデルとするとき、${N}の実数はほとんど至るところ${M}上ランダムである。}
       >
       +p{\emph{証明}：${\bigcup \Set{A^\ast}{A \in \null^M}}が零集合であることを示せばよい。}
@@ -682,11 +682,25 @@ in document '<
         >
     >
 
+    +frame-nofooter{}<
+      +vspace(3.5cm);
+      +centering{\fontsize(90pt){なるほど}}
+    >
+
+    +frame-nofooter{}<
+      +vspace(1cm);
+      +centering{\fontsize(70pt){で、}}
+      +centering{\fontsize(70pt){至る所ランダムで}}
+      +centering{\fontsize(70pt){何が嬉しいの？}}
+    >
+
+    +frame-nofooter{}<
+      +vspace(3.5cm);
+      +centering{\fontsize(90pt){A. Solovay集合}}
+    >
+
     +frame{Solovay集合：ランダム部分をBorel近似できる集合}<
-      +itemize<
-        +item{至るところランダムだと何が嬉しいのか？}<>
-      >
-      +lem<
+      +lem?*?:(`lem:solovay`)<
         +p{${M}を${(2^{ℵ_0})^M < ℵ_1}を満たす内部モデルとする。実数の集合${A \subseteq \R}が\emph{${M}上Solovayなら}、次が成立：}
         +eqn?:(AZMathEquation.notag)(${
           \exists B \in \Borels \mhquad
@@ -698,7 +712,22 @@ in document '<
         +item{\emph{${M}上のSolovay集合}${A}の気持ち：ランダム実数${x}に対して、${x}が${A}に属するかどうか${M}のパラメータと${x}に関する論理式を使って「判定」できる}<
           +item{実際にはもうちょっと厳しい定義（${x}の条件や「判定」をどこでするかなど）だが、テクニカルなので立ち入らない}<>
         >
-        +item{}<>
+        +item{\thmref(`lem:solovay`);の証明には強制法を使う。知っていれば簡単だが、今回は省略}<>
+      >
+    >
+
+    +frame?:(4){Solovay集合ならLebesgue可測になる！}<
+      +itemize<
+        +item{前の二つの補題を合わせれば……：}<>
+      >
+      +phantom(from 2)<+cor?*?:(`lem:solovay-lm`)<
+        +p{${M}を${(2^{ℵ_0})^M < ℵ_1}を満たす内部モデルとする。${A \subseteq \R}が${M}上Solovayなら、${A}はLebesgue可測である。}
+      >>
+      +phantom(from 3)<+proof<
+        +p{\thmref(`lem:solovay`);より、Borel集合${B}があって、${A}はランダム実数上${B}と一致する。\thmref(`lem:ae-random`);より実数は至るところ${M}上ランダムなので、${A \symdiff B \in \null}を得る。}
+      >>
+      +itemize<
+        +item{あとは「各々そういう${M}上でSolovayな実数の集合」だけを持つようなモデルが取れればよい！}<>
       >
     >
 
