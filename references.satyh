@@ -1,0 +1,52 @@
+@require: bibyfi/bibyfi
+@require: class-slydifi/theme/arctic
+@require: fss/fss
+
+let references = [
+  (`Solovay:1970`,
+    Article(|
+      author =
+        [ `Robert M. Solovay`
+        ];
+      title = `A model of set theory in which every set of reals is Lebesgue measurable`;
+      journal = `The Annals of Mathematics`;
+      year = `1970`;
+      volume = Some `92`;
+      number = Some `1`;
+      pages = (`1`, `56`);
+      month = Some `July`;
+      key = None;
+      note = Some `doi:10.2307/1970696`;
+    |)
+  )
+  ; (`Shelah:1984`,
+    Article(|
+      author =
+        [ `Saharon Shelah`
+        ];
+      title = `Can You Take Solovay's Inaccessible Away?`;
+      journal = `Israel Journal of Mathematics`;
+      year = `1984`;
+      volume = Some `48`;
+      number = Some `1`;
+      pages = (`1`, `47`);
+      month = None;
+      key = None;
+      note = Some `doi:10.1007/BF02760522`;
+    |)
+  )
+  ; (`Raisonnier:1984`,
+    Article(|
+      author = [`Jean Raisonnier`];
+      title = `A mathematical proof of S. Shelah's theorem on the measure problem and related results`;
+      journal = `Israel Journal of Mathematics`;
+      year = `1984`;
+      volume = Some `48`;
+      number = Some `1`;
+      pages = (`48`, `56`);
+      month = None;
+      key = None;
+      note = Some `doi:10.1007/BF02760523`;
+    |)
+  )
+]

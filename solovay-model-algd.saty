@@ -18,8 +18,11 @@
 @require: figbox/figbox
 @require: arrows/arrows
 @require: base/list-ext
+@require: colorbox/colorbox
+@require: bibyfi/bibyfi
 @import: tikzyfi
 @import: utils
+@import: references
 
 @import: presets
 
@@ -31,12 +34,16 @@ open EnumitemAlias
 open EnumitemFormat
 open EnumitemFormatUtil
 open SlydifiThemeArctic
+open Colorbox
 let-inline ctx \small il = 
   let sz = get-font-size ctx *' 0.75
   in  read-inline (ctx |> set-font-size sz) il
 
 let emph-color = SlydifiThemeArctic.default-config#color-emph
+let weak-color = SlydifiThemeArctic.default-config#color-weak
+let green-color = SlydifiThemeArctic.default-config#color-green
 let-math \Pow = ${\mathop{\mathcal{P}}}
+let-math \implies = ${\Longrightarrow}
 let-math \defeq = ${\coloneq}
 let set-for-each-script setf ctx =
   ctx |> setf HanIdeographic |> setf Kana
@@ -58,16 +65,77 @@ let-math \ZFC = ${\mathrm{ZFC}}
 let-math \AC = ${\mathrm{AC}}
 let-math \LM = ${\mathrm{LM}}
 let-math \CC = ${\mathrm{CC}}
+let-math \Col = ${\mathop{\mathrm{Col}}}
+let-math \coll kappa = ${\Col\p{\omega, \mathord{<} #kappa}}
+let-math \R = ${\mathbb{R}}
+let-math \Q = ${\mathbb{Q}}
+let-math \P = ${\mathbb{P}}
+
+let-mutable theorem-number <- 0
+
+let-inline ctx \thmref key = 
+  match get-cross-reference key with
+    | Some(label) -> read-inline ctx (embed-string label)
+    | None -> read-inline ctx { (??) }
+
+let-inline ctx \eqref key = 
+  match get-cross-reference (`eq:` ^ key ^ `:num`) with
+    | Some(label) -> 
+      read-inline ctx (embed-string (`(` ^ label ^ `)`))
+    | None -> read-inline ctx { (??) }
+
+let make-theorem ctx header ?:title ?:tag ?:opts blk = 
+  let () = theorem-number <- !theorem-number + 1 in
+  let txt-header = header ^ arabic !theorem-number in
+  let () = match tag with
+            | None -> ()
+            | Some(tag) -> 
+              register-cross-reference tag txt-header
+  in
+  let str-title = embed-string txt-header in
+  let ib-title =
+        match title with
+        | None ->   {#str-title;}
+        | Some(title) -> {#str-title; (#title;)}
+  in
+  let user-opts = match opts with
+        | None -> []
+        | Some(uos) -> uos in
+  let opts = List.append user-opts
+        [ lefttitle 10pt; righttitle 10pt; toptitle 2.5pt; bottomtitle 2.5pt;
+        fonttitle [bold]; colframe emph-color;
+        left 10pt; right 10pt; top 10pt;bottom 10pt;
+        ]
+  in
+  read-block ctx '<
+    +colorbox 
+      (opts)
+      ?:(ib-title)
+      (blk);
+  >
+
+let-block ctx +defn = make-theorem ctx `定義`
+let-block ctx +notation = make-theorem ctx `記法`
+let-block ctx +thm = make-theorem ctx `定理`
+let-block ctx +lem = make-theorem ctx `補題`
+let-block ctx +cor = make-theorem ctx `系`
+
+let bibyfi-theme = BiByFiIEEETran.theme (|
+    name-shrink = true;
+    et-al = true;
+    journal-abbr = [];
+  |)
+
 let mid-space-ratio = 0.1875
 let gr-slash-m thk vlen fsize color =
 
-  % 基準となる横の位置 (h) 及び 縦の位置 (v) の座標．
+  % 基準となる横の位置 (h) 及び 縦の位置 (v) の座標。
   let hmin = (0.0pt -' fsize) *' 0.2 in
   let h0 = 0pt in
   let hmax = fsize *' 0.2 in
   let va = vlen in
 
-  % 結ぶことになる点の座標．
+  % 結ぶことになる点の座標。
   let (x0, y0) = (5pt, va) in
   let (x1, y1) = (-5pt, 0.0pt -' va) in
 
@@ -152,6 +220,59 @@ let multiverse-diagram ctx =
     ]
   ]
 
+let inner-model ctx = 
+  open TikZyFi in
+  let script-size = get-font-size ctx *' 0.75 in
+  let script-ctx = ctx |> set-font-size script-size in
+  List.concat
+  [(Arrow.read (Arrow.solid (|line-width = 0.05; head-size = 0.25|)) ctx)#draw (0cm, 0cm) (0cm, 8cm)
+  ; [draw-math script-ctx (script-size *' (-0.5), 8cm +' script-size *' 0.5) ${\On}]
+  ; [ draw-math script-ctx (2.8284271247cm +' script-size *' (-0.5), 8cm +' script-size *' 0.5) ${V}
+    ; draw-math script-ctx (1.7426149773cm +' script-size *' (-0.5), 8cm +' script-size *' 0.5) ${M}
+    ]
+  ; [start-path (-1cm, 1cm) |> line-to (1cm, 1cm) 
+      |> terminate-path
+      |> dashed-stroke 1pt (0.125cm, 2pt, 0.125cm) Color.black 
+    ]
+  ; [ draw-math script-ctx (script-size *' (-0.125), (0.0cm -' script-size)) ${0}
+    ;draw-math script-ctx (script-size *' 0.25, 1cm +' script-size *' 0.25) ${\omega}
+    ;draw-math script-ctx (script-size *' 0.25, 1.75cm +' script-size *' 0.25) ${\omega_1^M}
+    ;draw-math script-ctx (script-size *' 0.25, 3cm +' script-size *' 0.25) ${\omega_1^V}
+    ]
+  ; [draw-text (-2.8284271247cm, 0cm) 
+      (read-inline ctx {
+          \tikzy[
+            spline?:[lw 1pt] 
+              (List.map 
+                (fun t -> coord (1cm *' t, 1cm *' (t *. t)))
+                [0.0; 0.2; 0.4; 0.6; 0.8; 1.0; 1.2; 1.4; 1.6; 1.8; 2.0; 2.2; 2.4; 2.6; 2.8; 2.8284271247]
+              )
+          ; spline?:[lw 1pt] 
+              (List.map 
+                (fun t -> 
+                  (let t = 0.0 -. t
+                  in coord (1cm *' t, 1cm *' (t *. t)))
+                )
+                (List.reverse [0.0; 0.2; 0.4; 0.6; 0.8; 1.0; 1.2; 1.4; 1.6; 1.8; 2.0; 2.2; 2.4; 2.6; 2.8; 2.8284271247])
+              )
+          ; spline?:[lw 1pt] 
+          (List.map 
+            (fun t -> coord (1cm *' t, 1cm *' (10.0 *. t *. t -. 18.0 *. t +. 9.0)))
+            [1.0; 1.2; 1.4; 1.6; 1.7426149773]
+          )
+          ; spline?:[lw 1pt] 
+          (List.map 
+            (fun t -> (
+                let t = 0.0 -. t
+                in coord (1cm *' t, 1cm *' (10.0 *. t *. t +. 18.0 *. t +. 9.0))))
+            (List.reverse [1.0; 1.2; 1.4; 1.6; 1.7426149773])
+          )
+          ];
+        }
+      )
+    ]
+  ]
+
 let generic-extension ctx = 
   open TikZyFi in
   let script-size = get-font-size ctx *' 0.75 in
@@ -170,7 +291,7 @@ let generic-extension ctx =
     ]
   ; [ Gr.circle (4.5cm +' script-size *' 0.25, 4.5cm -' script-size *' 0.5) 3pt
         |> fill emph-color
-    ; draw-math script-ctx (4.5cm, 4.5cm) ${\mathbb{P}}
+    ; draw-math script-ctx (4.5cm, 4.5cm) ${\P}
     ]
   ; [ Gr.circle (6cm +' script-size *' 0.25, 4.5cm -' script-size *' 0.5) 3pt
         |> fill emph-color
@@ -297,9 +418,9 @@ in document '<
     +frame-nofooter?:(8){非可測集合の作り方}<
       +itemize<
         +item{典型的な非可測集合\emph{Vitali集合}の「構成」は次のようだった：}<
-          +from(2)<+item?:(dot-arabic){\emph{選択公理}：${[0, 1] / \mathbb{Q}}の完全代表系${X}を取って……}<>>
+          +from(2)<+item?:(dot-arabic){\emph{選択公理}：${[0, 1] / \Q}の完全代表系${X}を取って……}<>>
           +from(3)<+item?:(dot-arabic){\emph{平行移動不変性}：可測なら測度零となる筈の${X}を平行移動して……}<>>
-          +from(4)<+item?:(dot-arabic){\emph{可算加法性}：可算個の${X}で${\mathbb{R}}が覆えて${\mu(\mathbb{R}) = 0}となり矛盾！}<>>
+          +from(4)<+item?:(dot-arabic){\emph{可算加法性}：可算個の${X}で${\R}が覆えて${\mu(\R) = 0}となり矛盾！}<>>
           +from(4)<+item{\small{\inactive?:(0.4){（他の非可測集合の例は alg_d の動画がいっぱいあるね）}}}<>>
          >
         +from(5)<
@@ -308,7 +429,7 @@ in document '<
             +from(7)<+item{\emph{平行移動不変性}の成り立たない測度を測度と呼びたくない}<
               +item{\small{\inactive?:(0.4){BanachのMeasure Problem；こっち諦めると、今回扱うより更に巨大な「可測基数」が出て来ます}}}<>
             >>
-            +from(8)<+item{今回は\emph{選択公理を諦めます}（Solovay）。}<>>
+            +from(8)<+item{今回は\emph{選択公理を諦めます}（Solovay \cite[`Solovay:1970`];）。}<>>
           >
         >
       >
@@ -337,14 +458,26 @@ in document '<
       ]);
     >
 
+    +namedframe(`solovay-model`){\select(only 1){Solovayモデル}{Solovayモデル・再訪}}<
+      +thm?:({Solovay 1970 \cite[`Solovay:1970`];})<
+        +p{${V}を${\ZFC}の\emph?:(from 3){宇宙}、${\kappa}を\emph?:(from 3){到達不能基数}、${V[G]}を\emph?:(from 3){${\coll{\kappa}}-強制拡大}とするとき、${V[G]}で見た\emph?:(from 3){内部モデル${\HOD^\omega}}は${\ZF+\DC+\LM}のモデルとなる。}
+        
+        +p{ただし、${\LM}は「任意の実数の集合がLebesgue可測である」という命題である。}
+      >
+      +itemize<
+        +phantom(from 2)<+item{知らない単語が結構ありそう}<>>
+        +phantom(from 3)<+item{以下、これらの単語の意味を解説していく}<>>
+      >
+    >
+
     +frame?:(8){どゆこと？}<
       +itemize?:(paren-arabic)<
         +item{まず\emph{普通に選択公理を仮定}します}<
           +from(2)<+item?:(listing-itemfmt){そうしないと通らない議論が沢山ある\inactive{（選択公理ちゃんマジ公理）}}<>>
         >
         +from(3)<+item{まず、「\emph{今ある宇宙} ${V}」をぶっ壊して「\emph{大きな宇宙}${V[G]}」を創ります}<>>
-        +from(4)<+item{\emph{「大きな宇宙${V[G]}」は選択公理を満たし}非可測集合がありますが……}<>>
-        +from(5)<+item{${V[G]}の内側の「\emph{小宇宙${L(\mathbb{R}^{V[G]})}}」を見ると……}<
+        +from(4)<+item{「大きな宇宙」\emph{${V[G]}は選択公理を満たし}非可測集合を持ちますが……}<>>
+        +from(5)<+item{${V[G]}の内側の「\emph{小宇宙${\p{\HOD^\omega}^{V[G]}}}」（Solovayモデル）を見ると……}<
           +from(6)<+item?:(listing-itemfmt){そこには\emph{可測集合しかありません}！}<
             +item?:(listing-itemfmt){必然的に選択公理も破れている}<>
           >>
@@ -353,9 +486,12 @@ in document '<
         >>
       >
     >
+
+    +againframe?:(2)(`solovay-model`);
+    +againframe?:(3)(`solovay-model`);
   >
 
-  +section{|集合の宇宙と強制法|}<
+  +section{|集合の宇宙と内部モデル、強制法|}<
     +frame{}<
       +vspace(3cm);
       +centering{\fontsize(80pt){ところで}}
@@ -399,7 +535,7 @@ in document '<
       +fig-on-right(from-graphics-given-context (8cm, 10cm) generic-extension)<
         +itemize<
           +item{\emph{強制法}：宇宙${V}に\emph{新たな元${G}}を付加した最小の外側の宇宙・\emph{強制拡大}\emph{${V[G]}}を創る技術}<
-            +item{${G \nin V}であっても、${G}の「近似」全体が成す\emph{擬順序}${\mathbb{P}}は${V}にあるので、それを使って議論する}<>
+            +item{${G \nin V}であっても、${G}の「近似」全体が成す\emph{擬順序}${\P}は${V}にあるので、それを使って議論する}<>
             +item{${ℙ}の元は自由度によって順序づけられており、${G}は${ℙ}の\emph{超フィルター}になる}<>
           >
           +item{${V[G]}は、${ℙ}-値集合の宇宙${V^ℙ}を${G}で割った物：
@@ -414,6 +550,22 @@ in document '<
         >
       >
     >
+
+    +frame{内部モデル}<
+      +fig-on-right(from-graphics-given-context ?:(-3cm, 0cm) (3cm, 10cm) inner-model)<
+        +itemize<
+          +item{クラス${M}が${V}の\emph{内部モデル}：${V}の内側にあり、${V}と同じ高さで、${\ZF}のモデルとなるある種のクラス}<
+            +item{例：強制拡大${V[G]}から見て${V}は内部モデル}<>
+            +item{${V, M}の一方で${\AC}が成立しても他方では破れ得る}<>
+          >
+          +item{内部モデルと外側のモデルとでは、種々の概念が一致したりしなかったりする}<
+            +item{\emph{一致する}概念：任意の有限集合、${\omega}、「${\alpha}は順序数である」「個別の${x}は実数である」、etc}<>
+            +item{\emph{変わり得る}概念：${2^\kappa}、「順序数${\alpha}は基数である」、${\omega_1, \omega_2, \ldots}など基数の具体的な値、実数の全体、etc}<>
+          >
+        >
+      >
+    >
+
   >
 
   +section{|巨大基数|}<
@@ -430,5 +582,18 @@ in document '<
 
   +section{|本当に到達不能基数は必要？|}<
     
+  >
+
+  +section{|まとめ|}<
+    +frame{References}<
+      +font-style[font-size 18pt]<
+              +makebibliography 
+        ?:(|sort-references=true; 
+            citestyle=CiteAsNumber;
+            name-shrink=true;
+          |)
+        (bibyfi-theme)(references);
+      >
+    >
   >
 >
