@@ -45,6 +45,21 @@ let green-color = SlydifiThemeArctic.default-config#color-green
 let-math \Pow = ${\mathop{\mathcal{P}}}
 let-math \implies = ${\Longrightarrow}
 let-math \defeq = ${\coloneq}
+let-math \Borels = ${\mathcal{B}}
+let-math \null = ${\mathord{𝗇𝗎𝗅𝗅}}
+let-math \overset m-over m =
+  text-in-math MathOrd (fun ctx -> (
+    let font-size = ctx |> get-font-size in
+    let ib-over = embed-math (ctx |> set-font-size (font-size *' 0.85)) m-over in
+    let ib-over = inline-fil ++ ib-over ++ inline-fil in
+    let ib-m = embed-math ctx m in
+    let ib-sp = inline-graphics 0pt (font-size *' 0.1) 0pt (fun _ -> []) in
+    line-stack-bottom [ib-over; ib-sp; ib-m]
+  ))
+
+let-math \iff = ${\mathrel{\Longleftrightarrow}}
+let-math \defs = ${\mathrel{\overset{\text!{def}}{\Longleftrightarrow}}}
+let-math \symdiff = ${\mathbin{△}}
 let set-for-each-script setf ctx =
   ctx |> setf HanIdeographic |> setf Kana
       |> setf Latin |> setf OtherScript
@@ -115,10 +130,18 @@ let make-theorem ctx header ?:title ?:tag ?:opts blk =
   >
 
 let-block ctx +defn = make-theorem ctx `定義`
+let-block ctx +rem = make-theorem ctx `注意`
+let-block ctx +exc = make-theorem ctx `演習`
 let-block ctx +notation = make-theorem ctx `記法`
 let-block ctx +thm = make-theorem ctx `定理`
 let-block ctx +lem = make-theorem ctx `補題`
 let-block ctx +cor = make-theorem ctx `系`
+let-block +proof blk = '<
+  +colorbox[ lefttitle 10pt; righttitle 10pt; toptitle 2.5pt; bottomtitle 2.5pt;
+  fonttitle [bold]; colframe emph-color;
+  left 10pt; right 10pt; top 10pt;bottom 10pt;
+  ]?:({Proof.})(blk);
+>
 
 let bibyfi-theme = BiByFiIEEETran.theme (|
     name-shrink = true;
@@ -127,6 +150,7 @@ let bibyfi-theme = BiByFiIEEETran.theme (|
   |)
 
 let mid-space-ratio = 0.1875
+let-math \Set a b = ${\set-builder{\mrquad!(mid-space-ratio)#a\mrquad!(mid-space-ratio)}{\mrquad!(mid-space-ratio)#b\mrquad!(mid-space-ratio)}}
 let gr-slash-m thk vlen fsize color =
 
   % 基準となる横の位置 (h) 及び 縦の位置 (v) の座標。
@@ -465,9 +489,10 @@ in document '<
         +p{ただし、${\LM}は「任意の実数の集合がLebesgue可測である」という命題である。}
       >
       +itemize<
-        +phantom(from 2)<+item{知らない単語が結構ありそう}<>>
         +phantom(from 3)<+item{Solovayモデルの構成は、修士なら一年くらいかけて理解する内容}<+item{強制法・内部モデルの理解に半年、Solovayモデルの理解に半年くらい}<>>>
-        +phantom(from 4)<+item{今回は厳密さにある程度目を瞑って、\emph{雰囲気の理解}を目標にする}<>>
+        +phantom(from 4)<+item{今回は厳密さにある程度目を瞑って、\emph{雰囲気の理解}を目標にする}<
+          +item{しっかりやるのが大変なので、強制法についてはブラックボックスにします}<>
+        >>
       >
     >
 
@@ -491,6 +516,19 @@ in document '<
     +againframe?:(2)(`solovay-model`);
     +againframe?:(3)(`solovay-model`);
     +againframe?:(4)(`solovay-model`);
+
+    +frame{記号と前提知識の確認}<
+      +defn<
+        +itemize<
+          +item{\emph{Borel集合}：開集合から補集合・可算和・可算共通部分を繰り返し取って得られる実数の集合。全体を${\mathcal{B}}で表す。}<>
+          +item{以下、${\mu}をLebesgue測度、${\mu*}をLebesgue外測度とし、\emph{零集合イデアル}${\null}を${\null \defeq \Set{A \subseteq \R}{\mu*(A) = 0}}により定める。}<>
+          +item{集合${A, B}の\emph{対称差集合}を次で定める：${A \symdiff B \defeq (A \setminus B) \cup (B \setminus A)}}<>
+          +item{実数の集合${A \subseteq \R}が\emph{Lebesgue可測}${\defs}あるBorel集合${B \in \mathcal{B}}が存在して、${A \symdiff B \in \null}}<
+            +item{\emph{演習問題}：「いつもの」Lebesgue可測性の定義との同値性を示せ}<>
+          >
+        >
+      >
+    >
   >
 
   +section{|集合の宇宙と内部モデル、強制法|}<
@@ -553,7 +591,7 @@ in document '<
       >
     >
 
-    +frame{内部モデル}<
+    +frame-nofooter{内部モデル}<
       +fig-on-right(from-graphics-given-context ?:(-3cm, 0cm) (3cm, 10cm) inner-model)<
         +itemize<
           +item{クラス${M}が${V}の\emph{内部モデル}：${V}の内側にあり、${V}と同じ高さで、${\ZF}のモデルとなるある種のクラス}<
@@ -561,10 +599,106 @@ in document '<
             +item{${V, M}の一方で${\AC}が成立しても他方では破れ得る}<>
           >
           +item{内部モデルと外側のモデルとでは、種々の概念が一致したりしなかったりする}<
-            +item{\emph{一致する}概念：任意の有限集合、${\omega}、「${\alpha}は順序数である」「個別の${x}は実数である」、etc}<>
+            +item{\emph{一致する}概念：任意の有限集合、${\omega}、自然数全体、有理数全体、「${\alpha}は順序数である」「個別の${x}は実数である」、etc\small{（実は推移モデルの間なら不変）}}<>
             +item{\emph{変わり得る}概念：${2^\kappa}、「順序数${\alpha}は基数である」、${\omega_1, \omega_2, \ldots}など基数の具体的な値、実数の全体、etc}<>
           >
         >
+      >
+    >
+
+    +frame{内部モデル／強制拡大間のBorel集合性・測度の保存}<
+      +itemize<
+        +item{集合${A \subseteq \R}がBorel集合かどうかは、モデル間で\emph{一致するとは限らない}}<
+          +item{例：新しい実数を追加すると、${V}の開集合が新しい宇宙ではそうでなくなる}<>
+        >
+        +item{それでも、内部モデルのBorel集合${B}の「レシピ」（\emph{Borelコード}）が与えられたら、外部モデルでも\emph{対応するBorel集合}${B* \supseteq B}を創れる}<
+          +item{内側の宇宙で可算なら外側の宇宙でも可算なので、基本開集合の一覧やそこから補集合・可算和・共通部分を取るレシピは外側宇宙でも有効}<
+            +item{内部モデルのBorel集合${B}のコードを、外側で解釈したBorel集合を${B*}と書く}<>
+          >
+          +item{但し、\emph{外の宇宙のBorelコードが内部モデルでも通用するとは限らない}}<
+            +item{例：${V}の${2^{ℵ_0}}を可算に潰すと、${V[G]}では${V}に属する全ての集合がBorelに}<>
+          >
+        >
+        +item{\emph{Borel集合の測度の一致}：${B \in M}が${M}でBorelなら、${\mu(B) = \mu(B*)}。}<>
+      >
+    >
+    +frame{ここまでのまとめ}<
+      +itemize<
+        +item{\emph{強制法}：新たな理想元を足して、横に宇宙を広げる方法}<>
+        +item{\emph{内部モデル}：今の宇宙を横に狭めた内側に存在する、小さな宇宙}<>
+        +item{強制拡大・${V}・内部モデルの間で有限性、有理数の全体、順序数などは一致するが、個別の基数の値や実数の全体はは一致するとは限らない}<
+          +item{内側の宇宙で実数なら、外側の宇宙でも実数}<>
+        >
+        +item{${\R, \Borels}などのモデルでの値を、右肩添え字で${\R^V, \Borels^M, \omega_1^{V[G]}}などと表す}<>
+        +item{モデルによってある集合がBorel集合かどうかは変わってしまう}<
+          +item{それでも\emph{Borel集合のレシピ}を考えると、内側の宇宙のBorel集合${B}を外側に持ち上げた集合${B*}が得られる}<>
+          +item{${B}と${B*}を同一視すれば、Borel集合のLebesgue測度の値も保たれる}<>
+        >
+      >
+    >
+  >
+
+  +section{|強制法・内部モデルとランダム実数|}<
+    +frame-nofooter{}<
+      +centering{\fontsize(80pt){なぜ}}
+      +centering{\fontsize(80pt){こんなものを}}
+      +centering{\fontsize(80pt){考えるのか？}}
+    >
+
+    +frame?:(5){強制法・内部モデルの意義}<
+      +itemize<
+        +phantom(from 1)<+item{\emph{無矛盾性証明のため}：ある命題やその否定が成り立つ宇宙を探せる}<
+          +phantom(from 2)<+item{Solovayは、${\ZF+\DC+\LM}を満たす宇宙を${\ZFC+\text!{到達不能基数}}を満たす宇宙から構成することで、「到達不能基数を認めるなら無矛盾だよ」と示した}<>>
+          +phantom(from 3)<+item{後述するShelahの定理\cite[`Shelah:1984`];は、逆に${\ZF+\DC+\LM}のモデルからはじめて、内部モデル${L[z]}をみるとそこでは外側の${\omega_1}が到達不能に見えていることを示し、\emph{${\ZF+\DC+\LM}に到達不能基数は本質的に必要}ということを示した}<>>
+        >>
+        +phantom(from 4)<+item{\emph{Solovayの定理固有の嬉しさ}：「可測になってくれる集合」の証拠になるような内部モデルを考えて議論できる！}<
+          +phantom(from 5)<
+            +item{内部モデル上の\emph{ランダム実数}および\emph{Solovay集合}の概念が重要！}<>
+          >
+        >>
+      >
+    >
+
+    +frame{ランダム実数}<
+      +defn<
+        +p{${M}を${V}の内部モデルとする。実数${x}が\emph{${M}上ランダム}${\defs} ${M}に属するどんな測度零なBorel集合${N \in \Borels^M}についても${x \nin N*}}
+      >
+      +rem<+p{${x}が${M}上ランダムなら${x \nin M}。}>
+      +itemize<
+        +item{${x}が${M}上ランダム ${\iff} ${x}は${M}から見ると\emph{一点なのに正の測度}を持つ}<>
+        +item{ネタバレ：Solovayのモデルは、ある意味で「\emph{ほとんど至るところランダム}」になるように作られる}<>
+      >
+    >
+
+    +frame{ほとんど至るところランダム}<
+      +lem<
+        +p{${M \subseteq N}を${\p{2^{ℵ_0}}^M < ℵ_1^N}となるような内部モデルとするとき、${N}の実数はほとんど至るところ${M}上ランダムである。}
+      >
+      +p{\emph{証明}：${\bigcup \Set{A^\ast}{A \in \null^M}}が零集合であることを示せばよい。}
+      +itemize?:(dot-arabic)<
+          +item{Borel集合は連続体濃度個あるので、${M}のBorel集合は${\p{2^{ℵ_0}}^M}個ある}<>
+          +item{${(2^{ℵ_0})^M < ℵ_1}より${\null^M = \Set{A_n}{n < \omega}}と列挙できる}<>
+          +item{測度は不変なので${\mu(A^\ast_n) = 0}。よって可算加法性より${\mu\p{\bigcup_n A^\ast_n} = 0}}<>
+        >
+    >
+
+    +frame{Solovay集合：ランダム部分をBorel近似できる集合}<
+      +itemize<
+        +item{至るところランダムだと何が嬉しいのか？}<>
+      >
+      +lem<
+        +p{${M}を${(2^{ℵ_0})^M < ℵ_1}を満たす内部モデルとする。実数の集合${A \subseteq \R}が\emph{${M}上Solovayなら}、次が成立：}
+        +eqn?:(AZMathEquation.notag)(${
+          \exists B \in \Borels \mhquad
+          \forall x \in \R: M\text!{上ランダム} \mhquad
+            \pB{x \in A \iff x \in B}
+        });
+      >
+      +itemize<
+        +item{\emph{${M}上のSolovay集合}${A}の気持ち：ランダム実数${x}に対して、${x}が${A}に属するかどうか${M}のパラメータと${x}に関する論理式を使って「判定」できる}<
+          +item{実際にはもうちょっと厳しい定義（${x}の条件や「判定」をどこでするかなど）だが、テクニカルなので立ち入らない}<>
+        >
+        +item{}<>
       >
     >
 
