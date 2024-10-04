@@ -460,13 +460,14 @@ in document '<
 
     +namedframe(`solovay-model`){\select(only 1){Solovayモデル}{Solovayモデル・再訪}}<
       +thm?:({Solovay 1970 \cite[`Solovay:1970`];})<
-        +p{${V}を${\ZFC}の\emph?:(from 3){宇宙}、${\kappa}を\emph?:(from 3){到達不能基数}、${V[G]}を\emph?:(from 3){${\coll{\kappa}}-強制拡大}とするとき、${V[G]}で見た\emph?:(from 3){内部モデル${\HOD^\omega}}は${\ZF+\DC+\LM}のモデルとなる。}
+        +p{${V}を${\ZFC}の\emph?:(from 2){宇宙}、${\kappa}を\emph?:(from 2){到達不能基数}、${V[G]}を\emph?:(from 2){${\coll{\kappa}}-強制拡大}とするとき、${V[G]}で見た\emph?:(from 2){内部モデル${\HOD^\omega}}は${\ZF+\DC+\LM}のモデルとなる。}
         
         +p{ただし、${\LM}は「任意の実数の集合がLebesgue可測である」という命題である。}
       >
       +itemize<
         +phantom(from 2)<+item{知らない単語が結構ありそう}<>>
-        +phantom(from 3)<+item{以下、これらの単語の意味を解説していく}<>>
+        +phantom(from 3)<+item{Solovayモデルの構成は、修士なら一年くらいかけて理解する内容}<+item{強制法・内部モデルの理解に半年、Solovayモデルの理解に半年くらい}<>>>
+        +phantom(from 4)<+item{今回は厳密さにある程度目を瞑って、\emph{雰囲気の理解}を目標にする}<>>
       >
     >
 
@@ -489,6 +490,7 @@ in document '<
 
     +againframe?:(2)(`solovay-model`);
     +againframe?:(3)(`solovay-model`);
+    +againframe?:(4)(`solovay-model`);
   >
 
   +section{|集合の宇宙と内部モデル、強制法|}<
