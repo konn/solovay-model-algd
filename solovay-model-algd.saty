@@ -482,17 +482,11 @@ in document '<
       ]);
     >
 
-    +namedframe(`solovay-model`){\select(only 1){Solovayモデル}{Solovayモデル・再訪}}<
+    +frame{Solovayモデル}<
       +thm?:({Solovay 1970 \cite[`Solovay:1970`];})<
         +p{${V}を${\ZFC}の\emph?:(from 2){宇宙}、${\kappa}を\emph?:(from 2){到達不能基数}、${V[G]}を\emph?:(from 2){${\coll{\kappa}}-強制拡大}とするとき、${V[G]}で見た\emph?:(from 2){内部モデル${\HOD^\omega}}は${\ZF+\DC+\LM}のモデルとなる。}
         
         +p{ただし、${\LM}は「任意の実数の集合がLebesgue可測である」という命題である。}
-      >
-      +itemize<
-        +phantom(from 3)<+item{Solovayモデルの構成は、修士なら一年くらいかけて理解する内容}<+item{強制法・内部モデルの理解に半年、Solovayモデルの理解に半年くらい}<>>>
-        +phantom(from 4)<+item{今回は厳密さにある程度目を瞑って、\emph{雰囲気の理解}を目標にする}<
-          +item{しっかりやるのが大変なので、強制法についてはブラックボックスにします}<>
-        >>
       >
     >
 
@@ -513,9 +507,14 @@ in document '<
       >
     >
 
-    +againframe?:(2)(`solovay-model`);
-    +againframe?:(3)(`solovay-model`);
-    +againframe?:(4)(`solovay-model`);
+    +frame{今回の範囲}<
+      +itemize<
+        +item{Solovayモデルの構成は、修士なら一年くらいかけて理解する内容}<+item{強制法・内部モデルの理解に半年、Solovayモデルの理解に半年くらい}<>>
+        +item{今回は厳密さにある程度目を瞑って、\emph{雰囲気の理解}を目標にする}<
+          +item{しっかりやるのが大変なので、強制法についてはブラックボックスにします}<>
+        >
+      >
+    >
 
     +frame{記号と前提知識の確認}<
       +defn<
@@ -716,18 +715,18 @@ in document '<
       >
     >
 
-    +frame?:(4){Solovay集合ならLebesgue可測になる！}<
+    +frame{Solovay集合ならLebesgue可測になる！}<
       +itemize<
         +item{前の二つの補題を合わせれば……：}<>
       >
-      +phantom(from 2)<+cor?*?:(`lem:solovay-lm`)<
+      +cor?*?:(`lem:solovay-lm`)<
         +p{${M}を${(2^{ℵ_0})^M < ℵ_1}を満たす内部モデルとする。${A \subseteq \R}が${M}上Solovayなら、${A}はLebesgue可測である。}
-      >>
-      +phantom(from 3)<+proof<
+      >
+      +proof<
         +p{\thmref(`lem:solovay`);より、Borel集合${B}があって、${A}はランダム実数上${B}と一致する。\thmref(`lem:ae-random`);より実数は至るところ${M}上ランダムなので、${A \symdiff B \in \null}を得る。}
-      >>
+      >
       +itemize<
-        +phantom(from 4)<+item{あとは「各々そういう${M}上でSolovayな実数の集合」だけを持つようなモデルが取れればよい！}<>>
+        +item{あとは「各々そういう${M}上でSolovayな実数の集合」だけを持つようなモデルが取れればよい！}<>
       >
     >
   >
