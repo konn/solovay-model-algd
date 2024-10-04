@@ -727,10 +727,9 @@ in document '<
         +p{\thmref(`lem:solovay`);より、Borel集合${B}があって、${A}はランダム実数上${B}と一致する。\thmref(`lem:ae-random`);より実数は至るところ${M}上ランダムなので、${A \symdiff B \in \null}を得る。}
       >>
       +itemize<
-        +item{あとは「各々そういう${M}上でSolovayな実数の集合」だけを持つようなモデルが取れればよい！}<>
+        +phantom(from 4)<+item{あとは「各々そういう${M}上でSolovayな実数の集合」だけを持つようなモデルが取れればよい！}<>>
       >
     >
-
   >
 
   +section{|巨大基数|}<
