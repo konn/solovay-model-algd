@@ -746,10 +746,10 @@ in document '<
       +lem?*?:(`lem:ae-random`)<
         +p{${M \subseteq N}を${\p{2^{ℵ_0}}^M < ℵ_1^N}となるような内部モデルとするとき、${N}の実数はほとんど至るところ${M}上ランダムである。}
       >
-      +p{\emph{証明}：${\bigcup \Set{A^\ast}{A \in \null^M}}が零集合であることを示せばよい。}
+      +p{\emph{証明}：${\bigcup \Set{A^\ast}{A \in (\null \cap \Borels)^M}}が零集合であることを示せばよい。}
       +itemize?:(dot-arabic)<
           +item{Borel集合は連続体濃度個あるので、${M}のBorel集合は${\p{2^{ℵ_0}}^M}個ある}<>
-          +item{${(2^{ℵ_0})^M < ℵ_1}より${\null^M = \Set{A_n}{n < \omega}}と列挙できる}<>
+          +item{${(2^{ℵ_0})^M < ℵ_1}より${(\null \cap \Borels)^M = \Set{A_n}{n < \omega}}と列挙できる}<>
           +item{測度は不変なので${\mu(A^\ast_n) = 0}。よって可算加法性より${\mu\p{\bigcup_n A^\ast_n} = 0}}<>
         >
     >
@@ -783,7 +783,7 @@ in document '<
       +itemize<
         +item{${A}が\emph{${M}上のSolovay集合}${\iff}ランダム実数${x}に対し、${x}が${A}に属するかどうか${M}のパラメータと${x}に関する論理式を使って${M[x]}で判定できる}<
           +item{${M[x]}：${M\cup \set{x}}を部分クラスとして含む最小の${\ZF}のモデル（常にある）}<>
-          +item{実際にはもうちょっと厳しい定義（${x}の条件や「判定」をどこでするかなど）だが、テクニカルなので立ち入らない}<>
+          +item{実際にはもうちょっと厳しい定義（${x}の渡る範囲が広いなど）だが、テクニカルなので立ち入らない}<>
         >
         +item{\thmref(`lem:solovay`);の証明には強制法を使う。知っていれば簡単だが、今回は省略}<>
       >
