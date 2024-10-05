@@ -633,7 +633,7 @@ in document '<
           +item{\small{\inactive{（この後${\AC}の成り立たないモデルを創るが、そこでの基数を扱うことはないので気にしなくてよい）}}}<>
         >
         +item{基数の全体は整列されており${\On}と同型になる。そこで、\emph{無限基数}を小さい順に${\alef_0, \alef_1, \ldots, \alef_{\omega}, \alef_{\omega + 1}, \ldots}または${\omega_0, \omega_1, \ldots, \omega_{\omega}, \omega_{\omega + 1}, \ldots}と書く。}<>
-        +item{順序数${\alpha}より大きな最小の基数を${\kappa^+}で表し、${\kappa}の\emph{後続基数}と呼ぶ。}<>
+        +item{基数${\alpha}より大きな最小の基数を${\kappa^+}で表し、${\kappa}の\emph{後続基数}と呼ぶ。}<>
         +item{${\kappa = \alef_{\alpha + 1}}の形の無限基数を\emph{後続基数}、そうでないものを\emph{極限基数}と呼ぶ。}<>
         +item{基数${\kappa}に対し、${2^\kappa \defeq \pabs{\Pow(\kappa)}}を${\kappa} の\emph{冪}と呼ぶ。}<
           +item{${\omega_\alpha}や${\kappa^+}, ${2^\kappa}は宇宙にどういう集合があるのかによって値がかわる！}<>
