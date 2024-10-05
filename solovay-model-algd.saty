@@ -916,7 +916,7 @@ in document '<
             +item?:(dot-arabic){${\HOD^\omega}の定義より${\sigma \in \seq{\omega}{\On} \cap V[G]}が取れ${A = \Set{x \in \R}{\varphi(x, \sigma)}}。}<>
             +item?:(dot-arabic){\thmref(`lem:levy-props`); (4)より、正則基数${\lambda < \kappa}が取れて${\sigma \in V[G \restr \lambda]}となる。}<>
             +item?:(dot-arabic){(3)(5)より${M \defeq V[G\restr \lambda]}で${\kappa}は到達不能なので${(2^{\alef_0})^{V[G \restr \lambda]} < \kappa = \alef_1^{V[G]}}。}<>
-            +item?:(dot-arabic){(2)(6)より${M}-ランダム実数${x}に対し「${x \in A}」${\iff}「任意の${\coll{\kappa}}-強制拡大で${\varphi(x, \sigma)}が成り立つ」という${M[x]}内の論理式で書ける。}<>
+            +item?:(dot-arabic){(2)(6)より${M}-ランダム実数${x}に対し${x \in A}は「任意の${\coll{\kappa}}-強制拡大で${\varphi(x, \sigma)}が成り立つ」という${M[x]}内の論理式で判定できる。}<>
             +item?:(dot-arabic){以上より${A}は${M = V[G \restr \lambda]}上Solovayで${(2^{\alef_0})^M < \alef_1}！}<>
           >
         >
