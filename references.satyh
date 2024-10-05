@@ -49,4 +49,29 @@ let references = [
       note = Some `doi:10.1007/BF02760523`;
     |)
   )
+  ; ( `Khomskii:2012`
+    , WildCard
+      {Yurii Khomskii, “Regularity Properties and Definability in the Real Number Continuum: Idealized forcing, polarized partitions, Hausdorff gaps and mad families in the projective hierarchy”. PhD thesis. Institute for Logic, Language and Computation, Universiteit van Amsterdam, 2012.}
+  )
+  ; ( `Ishii:2016`
+    , WildCard
+      {Hiromi Ishii, On Regularity Properties of Set of Reals and Inaccessible Cardinals”. Master thesis. Tsukuba University, 2016.}
+  )
+  ;(`Wright:1977`,
+    InProceedings(|
+      author       = [`J. D. Maitland Wright`];
+      title        = `Functional Analysis for the Practical Man`;
+      booktitle    = `Functional analysis: surveys and recent results - Proceedings of the Conference on Functional Analysis`;
+      year         = `1977`;
+      editor       = Some [`Klaus-Dieter Bierstedt`; `Benno Fuchssteiner`];
+      pages        = Some (`283`, `290`);
+      organization = None;
+      publisher    = Some `North-Holland`;
+      address      = None;
+      month        = None;
+      note         = None;
+      key          = None;
+    |)
+  )
+
 ]

@@ -61,6 +61,7 @@ let-math \implies = ${\Longrightarrow}
 let-math \defeq = ${\coloneq}
 let-math \Borels = ${\mathcal{B}}
 let-math \null = ${\mathord{𝗇𝗎𝗅𝗅}}
+let-math \meager = ${\mathord{𝗆𝖾𝖺𝗀𝖾𝗋}}
 let-math \alef = ${ℵ}
 let-math \overset m-over m =
   text-in-math MathOrd (fun ctx -> (
@@ -85,9 +86,14 @@ let set-all-fonts fspec =
 let-inline ctx \emoji it =
   let ctx1 = set-all-fonts (`fonts-noto-emoji:NotoEmoji-Regular`, 1., 0.) ctx in
   read-inline ctx1 it
+let-math \ell  = 
+  text-in-math MathOrd (fun ctx -> 
+    read-inline (set-math-font `stix` ctx) {${\mathcal{l}}}
+  )
 let-block +from n blk =  '< +phantom(from n)<#blk;> >
 let-inline ctx \inactive ?:kosa il = read-inline ctx {\textcolor(Color.gray (Option.map-or 0.5 (fun x -> 1.0 -. x) kosa)){#il;}}
 let-math \DC = ${\mathrm{DC}}
+let-math \CH = ${\mathrm{CH}}
 let-math \HOD = ${\mathrm{HOD}}
 let-math \OD = ${\mathrm{OD}}
 let-math \On = ${\mathrm{On}}
@@ -95,6 +101,7 @@ let-math \ZF = ${\mathrm{ZF}}
 let-math \ZFC = ${\mathrm{ZFC}}
 let-math \AC = ${\mathrm{AC}}
 let-math \LM = ${\mathrm{LM}}
+let-math \BP = ${\mathrm{BP}}
 let-math \CC = ${\mathrm{CC}}
 let-math \Col = ${\mathop{\mathrm{Col}}}
 let-math \coll kappa = ${\Col\p{\omega, \mathord{<} #kappa}}
@@ -201,6 +208,38 @@ let-math \quot over under =
   let mparen = paren-scheme (gr-slash-m 0.75pt) half-height-default in
   let rparen = empty-bracket-r in
   math-paren-with-middle lparen rparen mparen [${\mrquad!(mid-space-ratio)#over\mrquad!(mid-space-ratio)};  ${\mrquad!(mid-space-ratio)#under\mrquad!(mid-space-ratio)}]
+
+  let gr-abs-bracket-m thk vlen fsize color =
+
+  % 基準となる横の位置 (h) 及び 縦の位置 (v) の座標．
+  let hmin = fsize *' (-0.2) in
+  let h0 = 0pt in
+  let hmax = fsize *' 0.2 in
+  let va = vlen in
+
+  % 結ぶことになる点の座標．
+  let (x0, y0) = (0pt, va) in
+  let (x1, y1) = (0pt, 0.0pt -' va) in
+
+  let path =
+    start-path (x0, y0)
+      |> line-to (x1, y1)
+      |> terminate-path
+  in
+  let xmin = hmin in
+  let xmax = hmax in
+  (
+    [stroke thk color path],
+    (xmin, 0.0pt -' vlen), (xmax, vlen),
+    (fun _ -> 0pt)
+  )
+
+let-math \Seq m m-cond =
+  open AZMathParens in
+  let lparen = paren-scheme (gr-angle-bracket 0.5pt true) half-height-default in
+  let mparen = paren-scheme (gr-abs-bracket-m 0.5pt) half-height-default in
+  let rparen = paren-scheme (gr-angle-bracket 0.5pt false) half-height-default in
+  math-paren-with-middle lparen rparen mparen [${\mrquad!(mid-space-ratio)#m\mrquad!(mid-space-ratio)};  ${\mrquad!(mid-space-ratio)#m-cond\mrquad!(mid-space-ratio)}]
 
 let multiverse-diagram ctx = 
   open TikZyFi in
@@ -922,22 +961,192 @@ in document '<
         >
     >
 
-    +frame{まとめと一般化}<
-      
+    +frame-nofooter{まとめ}<
+      +itemize<
+        +item{到達不能基数${\kappa}を${\omega_1}に潰した宇宙${V[G]}では、そこの${\HOD^\omega}は${\ZF + \DC}を満たし、${\HOD^\omega}に属する任意の実数の集合はLebesgue可測になる}<
+          +item{可測性の一致：${\HOD^\omega}と${V[G]}は同じ実数を持つことが大事}<>
+          +item{Key: 実数の集合${A}が、連続体濃度が外から見て可算になるような内部モデル${M}に対しSolovayという性質を満たすとLebesgue可測になる}<
+            +item{Solovay集合は${M}-ランダム実数上Borel集合で近似でき、連続体濃度が小さければ、実数は至るところ${M}-ランダムとなるので}<>
+          >
+          +item{${A \in \HOD^\omega}は可算列から定義できて、${\kappa}の到達不能性からそんな可算列は途中の宇宙${M \defeq V[G \restr \lambda]}に既に現れていて、そこで${A}の定義論理式が使える}<
+          >
+          +item{${\kappa}は途中の段階ではまだ到達不能なので${2^{\alef_0}}が${V[G]}で可算になっている}<
+            +item{この二点に到達不能性の仮定が本質的に効いている}<>
+          >
+        >
+      >
+    >
+
+    +frame-nofooter{結果の一般化}<
+      +itemize<
+        +item{Borel集合族上の\emph{イデアル}${I}に対し、\emph{${I}-正則性}の概念が定義できる}<
+          +item{Lebesgue可測性＝零集合イデアル${\null}に関する正則性}<>
+          +item{Baireの性質＝痩せ集合イデアル${\meager}に関する正則性}<>
+          +item{\small{etc.}}<>
+        >
+        +item{議論を一般化してやると、${I}が\emph{${\sigma}-飽和性}や\emph{強い適正性}という性質を満たす場合、\emph{Solovayモデルで任意の実数の集合が${I}-正則性を持つ}（Khomskii\cite[`Khomskii:2012`];）}<
+          +item{\small{\inactive{（Khomskii\cite[`Khomskii:2012`];では単純に${I^+}が適正ならよいとされているが、実はもうちょっと条件が要る）}}}<>
+          +item{実は「任意の実数の集合が\emph{Baireの性質}を持つ（${\BP}）」という命題単体には\emph{到達不能基数は不要}であることが知られている（Shelah\cite[`Shelah:1984`];）}<
+            +item{Shelah\cite[`Shelah:1984`];のモデルは${\CH}も満たす。${\ZF+\DC+\BP+\mtextcolor!(emph-color){\lnot \CH}}の無矛盾性が到達不能基数なしで言えるかは未解決（一度アナウンスされたが取り下げられた）}<>
+          >
+        >
+      >
     >
   >
 
-  +section{|Solovayモデルでの解析学|}<
-    
+  +section{|急速フィルター：可測性から到達不能基数へ|}<
+    +frame-nofooter{到達不能基数、要るの？}<
+      +itemize<
+        +item{${\ZF+\DC+\LM}のモデルを創るのに、到達不能基数は必要なのか？}<>
+      >
+
+      +thm?:({Shelah\cite[`Shelah:1984`];})<
+        +p{${\ZF+\CC+\LM}の下で、任意の実数${z \in R}に対し、${V}の${\omega_1}は${L[z]}から見ると到達不能基数になっている。}
+      >
+
+      +itemize<
+        +item{${\CC}：可算選択公理。${\AC}を可算直積に制限したもので、${\DC}から従う}<>
+        +item{${L[z]}：実数${z}をパラメータに使って下から定義できる最小の内部モデル。}<>
+        +item{Solovayの定理と合わせて、「${\ZF+\DC+\LM}」と「${\ZFC+\text!{到達不能基数}}」は\emph{無矛盾性の意味で等価}なことがわかった}<
+          +item{\small{このように、命題の強さを巨大基数公理で分類する時は、「巨大基数＋強制法」で命題のモデルをつくり、逆は「命題を仮定し適当な内部モデルでその巨大基数をみつける」という形で示すのが常套手段}}<>
+        >
+      >
+    >
+
+    +frame-nofooter{実際のShelahの定理}<
+      +itemize<
+        +item{Shelahが示したのは、より精密には次の定理：}<>
+      >
+      +thm?:({Shelah\cite[`Shelah:1984`];})<
+        +p{${\ZF+\CC}の下で、任意の\emph{${\mathbf{\Sigma^1_3}}-集合}がLebesgue可測なら、${\omega_1}は任意の実数${z}について${L[z]}で到達不能基数になっている\small{（「\emph{${\omega_1}が実数に対して到達不能}」）}。}
+      >
+      +itemize<
+        +item{${\mathbf{\Sigma}^1_3}-集合：ある${\R^4}のBorel集合${B}について、以下の形で書ける集合：
+          \eqn?:(AZMathEquation.notag)(${\Set{a \in \R}{\exists x \in \R \mhquad \forall y \in \R \mhquad \exists z \in \R \mhquad (a,x,y,z) \in B}});
+        }<>
+        +item{つまり、\emph{ある程度の複雑さの論理式で定義できる実数の集合をLebesgue可測にする}のに到達不能基数が必要！}<
+          +item{${\mathbf{\Sigma}^1_3}-可測性は（到達不能基数の存在を認めるなら）、フルの${\AC}とも両立}<>
+        >
+      >
+    >
+
+    +frame-nofooter{Shelahの定理のあらまし}<
+      +itemize<+item{実際には次の形の定理を示している：}<>>
+      +lem?*?:(`lem:accessible`)<
+        +p{${\ZF+\CC}を仮定し、更に任意の${\mathbf{\Sigma}^1_2}-集合が可測で、実数${z}が${\omega_1^{L[z]} = \omega_1^V}を満たすとする。ことのき、非可測な${\Sigma^1_3}-集合が存在する。}
+      >
+      +itemize<
+        +item{${\mathbf{\Sigma}^1_2}-集合：${\mathbf{\Sigma}^1_3}の一個下の複雑性のもの。${\exists \forall \Borels}の形で書ける集合。}<>
+        +item{上の補題とShelahの定理の同値性は次からわかる：}<>
+      >
+      +lem?:({${\ZF+\CC}})<
+        +p{「任意の${z \in \R}について、${\omega_1^{L[z]} < \omega_1^V}」\linebreak; ${\iff}「任意の${z \in \R}について、${\omega_1^V}は${L[z]}から見ると到達不能基数」}
+      >
+    >
+
+    +frame{非可測集合をどう創るか？}<
+      +itemize<
+        +item{Shelahの証明はかなり大変。Raisonnier\cite[`Raisonnier:1984`];が同じ号の論文誌（！）で「数学的」な別証明を与えている。主役は\emph{急速フィルター}である：}<>
+      >
+      +defn<
+        +p{${\omega}上のフィルター${ℱ}が\emph{急速}${\defs} ${ℱ}は補有限フィルターを含み、任意の単調な${f: \omega \to \omega}に対し、ある${a \in ℱ}があって${\forall n \mhquad \pabs{f(n) \cap a} \leq n}。}
+      >
+      +lem?:({Mokobodzki})<+p{急速フィルターはLebesgue非可測。}>
+      +itemize<
+        +item{\small{証明の概略：補有限フィルターを含むフィルターは、可測なら零集合（Sierpinski）。一方、Lebesgue密度定理などを使って急速フィルターの定義条件から不等式評価すると、外測度正となり矛盾。}}<>
+      >
+    >
+
+    +frame-nofooter{Raisonnierによる急速フィルターの構成}<
+      +itemize<
+        +item{余りにもテクいので定義と結果だけ（\small{\inactive{詳細は大昔に修論\cite[`Ishii:2016`];にまとめました}}）。}<>
+      >
+      +defn?:({Raisonnierフィルター\cite[`Raisonnier:1984`];})<
+        +p{
+          実数${x}の\emph{Raisonnierフィルター}${ℱ(x)}とは、${L[x]}の実数の「被覆」全体が生成するフィルターのことである。
+          より厳密には、実数集合${A}に対し、${H(A) \defeq \Set{f\text!{と}g\text!{が異なる最小の桁}}{f,g \in A, f \neq g}}とする時：}
+        +eqn?:(AZMathEquation.notag)(${
+          a \in ℱ(x) \defs \exists \Seq{F_i \subseteq \seq{\omega}{2}}{i < \omega} \mhquad
+            \pB{
+              \bigcup_i H(F_i) \subseteq a \land \seq{\omega}{2} \cap L[x] \subseteq \bigcup_i F_i
+            }
+        });
+      >
+      +lem?:({Raisonnier\cite[`Raisonnier:1984`];})<
+        +p{\thmref(`lem:accessible`);の仮定の下で、${ℱ(x)}は${\Sigma^1_3}な急速フィルターである。}
+      >
+    >
+
+    +frame{Shelahの定理・まとめ}<
+      +itemize<
+        +item{Shelah\cite[`Shelah:1984`];は「${\CC}と任意の実数の集合の可測性が成り立つなら、${V}の${\omega_1}は全ての実数${z}に対し${L[z]}で到達不能」を示し、Solovayの「逆」を示した}<
+          +item{可測性には到達不能基数は本質的に必要！}<>
+          +item{実際には、${\mathbf{\Sigma}^1_3}という種類の集合の可測性の時点で、既に到達不能基数が必要}<>
+        >
+        +item{Raissonierは、${\mathbf{\Sigma}^1_2}-集合の可測性を仮定した上で、上の状況が破れているとして、${\Sigma^1_3}な非可測集合を構成する別証明を与えている}<
+          +item{\emph{急速フィルター}の一種であるRaisonnierフィルターがその非可測集合}<>
+          +item{証明はかなりテクい……}<>
+        >
+      >
+    >
   >
 
-  +section{|急速フィルター：可測性から到達不能基数へ|}<
-    
+  +section{|オマケ：Solovayモデルでの解析学|}<
+    +frame{Solovayモデルでの解析学1：自動連続性}<
+      +itemize<
+        +item{Solovayモデルはいい集合しかなかったり、${\DC}しか成り立たなかいため、\emph{「普通」とは異なる解析学}が成り立っている。}<>
+        +item{以下では、証明はスキップしつつそうした結果を簡単に見ていく。}<
+          +item{詳細は私の修論\cite[`Ishii:2016`];の付録を参照（オリジナルの結果ではない）。}<>
+        >
+        +item{次は${\ZF+\DC+\BP}から従う衝撃の結果である：}<>
+      >
+      +thm?:({Wright\cite[`Wright:1977`];})<
+        +p{${\ZF+\DC+\BP}を仮定する。${B}をBanach空間、${W}を第二可算ベクトル空間とする。${T: B \to W}が線型写像なら、${T}は連続である。特に、Banach空間から${\R}への線型汎関数は常に連続である。}
+      >
+    >
+
+    +frame{Solovayモデルでの解析学2：Hahn–Banachの不成立}<
+      +itemize<
+        +item{一方で、${\BP}や${\LM}のために、成り立たなくなる定理がある。}<>
+        +item{たとえば、次のHahn–Banachの定理は関数解析の基本定理である：}<>
+      >
+      +thm?:({Hahn–Banachの定理})<
+        +small<+p{${\ZFC}を仮定する。${B}を位相線型空間、${p: B \to \R}を劣線型とする。線型部分空間${B_0 \subseteq B}上の線型汎関数${f: B_0 \to \R}が${B_0}上で${f \leq p}を満たすなら、${f}は${f \leq p}を保ったまま${B}全域に拡張される。}>
+      >
+      +itemize<
+        +item{しかし、次の補題から\emph{無制限のHahn–BanachはSolovayモデルで不成立}！}<>
+      >
+      +lem?:({Solovay})?:(`lem-hb-refutes-solovay`)<+p{${\ZF+\DC}のもとで、${B}を可分ノルム空間に制限したHahn–Banachの定理から、Baireの性質もLebesgue可測性も持たない実数の集合の存在が従う。}>
+    >
+
+    +frame{Solovayモデルでの解析学3：制限されたHahn–Banach}<
+      +itemize<
+        +itemize<
+        +item{\thmref(`lem-hb-refutes-solovay`);は${\ell^\infty}についてのHahn–Banachから${\omega}上のある種の測度の存在が出、それからLebesgue可測でもBaireでもない集合がつくれることから従う。}<        >
+      >
+        +item{空間を${\ell^\infty}を避けるよう限定した\emph{部分的なHahn–Banachが証明できる}：}<>
+      >
+      +lem?:({Solovay})<
+        +p{${\ZF+\DC+\BP}のもとで、以下の制限されたHahn–Banachが証明可能：}
+        +itemize?:(dot-arabic)<
+          +item{${B}を可分ノルム空間、${f}を\emph{原点で連続な}線型写像に制限したもの}<>
+          +item{${B}を\emph{可分Banach空間}に制限したもの}<>
+        >
+      >
+    >
   >
+
 
   +section{|まとめ|}<
-    +frame{References}<
-      +font-style[font-size 18pt]<
+    +namedframe(`matome`){まとめ}<
+      +itemize<
+        +item{}<
+          
+        >
+      >
+    >
+    +frame-nofooter{References}<
+      +font-style[font-size 14pt]<
               +makebibliography 
         ?:(|sort-references=true; 
             citestyle=CiteAsNumber;
