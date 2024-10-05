@@ -48,6 +48,7 @@ let-math \implies = ${\Longrightarrow}
 let-math \defeq = ${\coloneq}
 let-math \Borels = ${\mathcal{B}}
 let-math \null = ${\mathord{𝗇𝗎𝗅𝗅}}
+let-math \alef = ${ℵ}
 let-math \overset m-over m =
   text-in-math MathOrd (fun ctx -> (
     let font-size = ctx |> get-font-size in
@@ -559,7 +560,7 @@ in document '<
       +fig-on-right(from-graphics-given-context (5.5cm, 10cm) universe-diagram)<
         +itemize<
           +item{\emph{集合の宇宙${V}}：集合全体の成すクラスのこと}<
-            +item{${\ZFC}などの集合論公理系は個別の集合よりも${V}の性質を定めている}<>
+            +item{${\ZFC}などの集合論の公理系は、一個の集合の性質ではなく、\emph{集合の宇宙${V}に何があるか}を定めている。}<>
           >
           +item{${V}は\emph{順序数全体のクラス${\On}}に沿って空集合から\emph{繰り返し冪集合を取って}得られる：
 
@@ -569,6 +570,19 @@ in document '<
             | V \defeq \bigcup_{\alpha \in \On} V_\alpha
             |});
           }<>
+        >
+      >
+    >
+
+    +frame{集合の宇宙の住人たち：順序数と基数}<
+      +itemize<
+        +item{\emph{順序数}：整列順序の順序型。${\alpha, \beta, \gamma, \ldots}などで表す。順序数全体を${\On}と書く。${\alpha + 1}の形の順序数を\emph{後続順序数}、それ以外を\emph{極限順序数}と呼ぶ。}<>
+        +item{\emph{基数}：全単射の同型型。選択公理の下では「それ未満の順序数からの全射がない順序数」として定義される。基数は${\kappa, \lambda, \theta, \ldots}などで表す。}<
+          +item{\small{（この後${\AC}の成り立たないモデルを創るが、そこでの基数を扱うことはないので気にしなくてよい）}}<>
+          +item{基数の全体は整列されており${\On}と同型になる。そこで、\emph{無限基数}を小さい順に${\alef_0, \alef_1, \ldots, \alef_{\omega}, \alef_{\omega + 1}, \ldots}または${\omega_0, \omega_1, \ldots, \omega_{\omega}, \omega_{\omega + 1}, \ldots}と書く。}<>
+          +item{${\kappa = \alef_\alpha}に対し${\kappa^+ \defeq \alef_{\alpha + 1}}を${\kappa}の\emph{後続基数}、${2^\kappa \defeq \pabs{\Pow(\kappa)}}を${\kappa} の冪と呼ぶ。}<>
+          +item{${\kappa = \alef_{\alpha + 1}}の形の無限基数を\emph{後続基数}、そうでないものを\emph{極限基数}と呼ぶ。}<>
+          +item{${\kappa}が\emph{強極限基数}${\defs \forall \lambda < \kappa \mhquad 2^\lambda < \kappa}}<>
         >
       >
     >
@@ -776,11 +790,7 @@ in document '<
     >
   >
 
-  +section{|巨大基数|}<
-    
-  >
-
-  +section{|Levy崩壊|}<
+  +section{|Levy崩壊と到達不能基数|}<
     
   >
 
@@ -788,7 +798,7 @@ in document '<
     
   >
 
-  +section{|本当に到達不能基数は必要？|}<
+  +section{|急速フィルター：可測性から到達不能基数へ|}<
     
   >
 
