@@ -43,7 +43,9 @@ let emph-color = SlydifiThemeArctic.default-config#color-emph
 let weak-color = SlydifiThemeArctic.default-config#color-weak
 let green-color = SlydifiThemeArctic.default-config#color-green
 let-math \Pow = ${\mathop{\mathcal{P}}}
-let-math \pow x y = ${\mathord{\mrquad!(0.0)^{#x}#y}}
+let-math \cf = ${\mathop{\mathop{cf}}}
+let-math \seq x y = ${\mathord{\mrquad!(0.0)^{#x}#y}}
+let-math \ran= ${\mathop{\mathrm{ran}}}
 let-math \implies = ${\Longrightarrow}
 let-math \defeq = ${\coloneq}
 let-math \Borels = ${\mathcal{B}}
@@ -556,11 +558,11 @@ in document '<
         (fun ctx -> List.map (Gr.scale-graphics (0.0pt, 0.0pt) 1.5 1.25) (universe-diagram ctx)) );
     >
     
-    +frame{集合の宇宙}<
+    +frame-nofooter{集合の宇宙}<
       +fig-on-right(from-graphics-given-context (5.5cm, 10cm) universe-diagram)<
         +itemize<
           +item{\emph{集合の宇宙${V}}：集合全体の成すクラスのこと}<
-            +item{${\ZFC}などの集合論の公理系は、一個の集合の性質ではなく、\emph{集合の宇宙${V}に何があるか}を定めている。}<>
+            +item{集合論の公理系は、\emph{集合の宇宙${V}の性質}を定めている。}<>
           >
           +item{${V}は\emph{順序数全体のクラス${\On}}に沿って空集合から\emph{繰り返し冪集合を取って}得られる：
 
@@ -570,19 +572,22 @@ in document '<
             | V \defeq \bigcup_{\alpha \in \On} V_\alpha
             |});
           }<>
+          +item{\emph{順序数}：整列順序の順序型。${\alpha, \beta, \gamma, \ldots}などで表す。順序数全体を${\On}と書く。${\alpha + 1}の形の順序数を\emph{後続順序数}、それ以外を\emph{極限順序数}と呼ぶ。}<>
         >
       >
     >
 
-    +frame{集合の宇宙の住人たち：順序数と基数}<
+    +frame-nofooter{基数について}<
       +itemize<
-        +item{\emph{順序数}：整列順序の順序型。${\alpha, \beta, \gamma, \ldots}などで表す。順序数全体を${\On}と書く。${\alpha + 1}の形の順序数を\emph{後続順序数}、それ以外を\emph{極限順序数}と呼ぶ。}<>
         +item{\emph{基数}：全単射の同型型。選択公理の下では「それ未満の順序数からの全射がない順序数」として定義される。基数は${\kappa, \lambda, \theta, \ldots}などで表す。}<
-          +item{\small{（この後${\AC}の成り立たないモデルを創るが、そこでの基数を扱うことはないので気にしなくてよい）}}<>
-          +item{基数の全体は整列されており${\On}と同型になる。そこで、\emph{無限基数}を小さい順に${\alef_0, \alef_1, \ldots, \alef_{\omega}, \alef_{\omega + 1}, \ldots}または${\omega_0, \omega_1, \ldots, \omega_{\omega}, \omega_{\omega + 1}, \ldots}と書く。}<>
-          +item{${\kappa = \alef_\alpha}に対し${\kappa^+ \defeq \alef_{\alpha + 1}}を${\kappa}の\emph{後続基数}、${2^\kappa \defeq \pabs{\Pow(\kappa)}}を${\kappa} の冪と呼ぶ。}<>
-          +item{${\kappa = \alef_{\alpha + 1}}の形の無限基数を\emph{後続基数}、そうでないものを\emph{極限基数}と呼ぶ。}<>
-          +item{${\kappa}が\emph{強極限基数}${\defs \forall \lambda < \kappa \mhquad 2^\lambda < \kappa}}<>
+          +item{\small{\inactive{（この後${\AC}の成り立たないモデルを創るが、そこでの基数を扱うことはないので気にしなくてよい）}}}<>
+        >
+        +item{基数の全体は整列されており${\On}と同型になる。そこで、\emph{無限基数}を小さい順に${\alef_0, \alef_1, \ldots, \alef_{\omega}, \alef_{\omega + 1}, \ldots}または${\omega_0, \omega_1, \ldots, \omega_{\omega}, \omega_{\omega + 1}, \ldots}と書く。}<>
+        +item{順序数${\alpha}より大きな最小の基数を${\kappa^+}で表し、${\kappa}の\emph{後続基数}と呼ぶ。}<>
+        +item{${\kappa = \alef_{\alpha + 1}}の形の無限基数を\emph{後続基数}、そうでないものを\emph{極限基数}と呼ぶ。}<>
+        +item{基数${\kappa}に対し、${2^\kappa \defeq \pabs{\Pow(\kappa)}}を${\kappa} の\emph{冪}と呼ぶ。}<
+          +item{${\omega_\alpha}や${\kappa^+}, ${2^\kappa}は宇宙にどういう集合があるのかによって値がかわる！}<>
+          +item{実際、\emph{強制法}や\emph{内部モデル}を考えると結構自在に変えられる}<>
         >
       >
     >
@@ -762,7 +767,7 @@ in document '<
     +frame{遺伝的に順序数の${\omega}-列で定義可能なクラス${\HOD^\omega}}<
       +defn<
         +itemize<
-          +item{集合${A}が\emph{順序数の${\omega}-列で定義可能}（記号：${A \in \OD^\omega}）${\defs}論理式${\varphi(x, s)}と順序数の可算列${z \in \pow{\omega}{\On}}があって、${A = \Set{x}{\varphi(x, z)}}}<>
+          +item{集合${A}が\emph{順序数の${\omega}-列で定義可能}（記号：${A \in \OD^\omega}）${\defs}論理式${\varphi(x, s)}と順序数の可算列${z \in \seq{\omega}{\On}}があって、${A = \Set{x}{\varphi(x, z)}}}<>
           +item{集合${A}が\emph{遺伝的に順序数の${\omega}-列で定義可能}（記号：${A \in \HOD^\omega}）${\defs} ${A}は自身や元、元の元……を含め${\OD^\omega}な集合だけでできている}<>
         >
       >
@@ -791,7 +796,37 @@ in document '<
   >
 
   +section{|Levy崩壊と到達不能基数|}<
-    
+    +frame{Levy崩壊}<
+      +defn<
+        +p{${\kappa}を正則基数とする。\emph{Levy崩壊}${\coll{\kappa}}を次で定める：}
+        +align?:(AZMathEquation.notag)(${
+        | \coll{\kappa}
+        | \defeq \prod_{\omega < \alpha < \kappa}^{<\alef_0} \seq{<\omega}{\alpha} 
+        |
+        | \defeq \Set{f}{ f: \text!{関数}, \pabs{f} < \alef_0, \dom(f) \subset \omega, \ran(f) \subset \alpha < \kappa}
+        |});
+      >
+      +itemize<
+        +item{直観：${\coll{\kappa}}は${\omega}と${\kappa}の間の全ての順序数に、${\omega}からの全射を足す}<>
+        +item{特に、${\kappa}が\emph{到達不能基数}のとき、${\coll{\kappa}}-強制拡大をした宇宙では${\kappa}は${\omega_1}になっている}<>
+      >
+    >
+
+    +frame-nofooter{到達不能基数}<
+      +defn<
+        +itemize<
+          +item{順序数${\alpha}の\emph{共終数}を次で定める：${\cf(\alpha) = \min \Set{ \pabs{A}}{ A \subseteq \alpha, \sup(A) = \alpha }}}<>
+          +item{基数${\kappa}が\emph{正則}${\defs \cf(\kappa) = \kappa}。正則でない基数を\emph{特異基数}と呼ぶ。}<
+            +item{${\kappa}が正則${=} ${\kappa}は小さな基数で「近似」できない}<>
+            +item{例：${\alef, \alef_1, \ldots, \alef_{\alpha + 1}}は正則基数。${\alef_\omega, \alef_{\omega_1}}などは特異基数。}<>
+          >
+          +item{${\kappa}が\emph{強極限基数}${\defs \forall \lambda < \kappa \mhquad 2^\lambda < \kappa}}<>
+          +item{${\kappa}が\emph{到達不能基数}${\defs} ${\kappa}は正則かつ強極限基数。}<
+            +item{${\kappa}は小さい列で近似できないし、冪について閉じている。到達不能基数の存在はGrothendieck宇宙の存在と同値。}<>
+          >
+        >
+      >
+    >
   >
 
   +section{|Solovayモデルでの解析学|}<
