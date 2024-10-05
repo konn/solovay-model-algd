@@ -20,6 +20,7 @@
 @require: base/list-ext
 @require: colorbox/colorbox
 @require: bibyfi/bibyfi
+@require: annot
 @import: tikzyfi
 @import: utils
 @import: references
@@ -38,6 +39,9 @@ open Colorbox
 let-inline ctx \small il = 
   let sz = get-font-size ctx *' 0.75
   in  read-inline (ctx |> set-font-size sz) il
+let-block ctx +small bk = 
+  let sz = get-font-size ctx *' 0.75
+  in  read-block (ctx |> set-font-size sz) bk
 
 let emph-color = SlydifiThemeArctic.default-config#color-emph
 let weak-color = SlydifiThemeArctic.default-config#color-weak
@@ -441,7 +445,7 @@ in document '<
     +frame{非可測集合あるやろがい}<
       +fig-center(vconcat 
       [ include-image 15cm `./imgs/algd-thumb.jpg`
-      ; FigBox.textbox {\small{\inactive{※プライバシー保護のため画像・音声を一部加工しています}}}
+      ; FigBox.textbox {\small{\href(`https://youtu.be/KJlZxdrhK-0?si=WWjpp6jnHYoYN1FZ`){\inactive{※プライバシー保護のため画像・音声を一部加工しています}}}}
       ]);
     >
 
@@ -825,6 +829,32 @@ in document '<
             +item{${\kappa}は小さい列で近似できないし、冪について閉じている。到達不能基数の存在はGrothendieck宇宙の存在と同値。}<>
           >
         >
+      >
+    >
+
+    +frame-nofooter{到達不能基数と巨大基数}<
+      +fig-on-right(
+        vconcat [include-image 6.5cm `./imgs/alg-d-contra.jpg`
+          ; textbox {\small{\small{\href(`https://youtu.be/z7jXyjFnjfU?si=wHQ11E-qSyJIbonI`){※プライバシーの観点から以下略}}}}]
+      )<
+        +itemize<
+          +item{到達不能基数は、\emph{巨大基数}と呼ばれるものの一種}<
+            +item{\emph{巨大基数}：${\ZFC}の無矛盾性を導くほど大きい基数}<>
+            +item{今回の${\LM}のような命題の強さを測る物差し}<>
+          >
+        >
+      >
+      +itemize<
+        +item{${\kappa}を到達不能とすると、${V_\kappa}が${\ZFC}のモデルになる}<
+            +item{しかも${\kappa}未満の順序数で${\ZFC}のモデルになるような${V_\alpha}が非有界に存在する}<>
+          >
+          +item{到達不能基数はまだ弱く、「小さな巨大基数」と呼ばれる物の代表例}<
+            +item{「大きな巨大基数」は真偽を保つ${V}の中への同型${V \prec M \subseteq V}で定義される}<>
+          >
+          +item{最強巨大基数公理：${0 = 1}。${\AC}の下でReinhardt基数${V \prec V}の存在と同値}<
+            +item{${0 = 1}自身は単なる矛盾なので単に「巨大基数」と呼ぶと厳密には怒られる}<>
+            +item{${\AC}がない状態でReinhardt基数が矛盾するかは未解決問題}<>
+          >
       >
     >
   >
