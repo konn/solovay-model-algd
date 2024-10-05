@@ -36,13 +36,20 @@ open EnumitemFormat
 open EnumitemFormatUtil
 open SlydifiThemeArctic
 open Colorbox
+let enum-format enumeratef =
+  let labelf ctx idx =
+    let fsizer r = get-font-size ctx *' r in
+    (enumeratef ctx idx |> EnumitemFormatUtil.align-right (fsizer 1.5))
+      ++ inline-skip (fsizer 0.5)
+  in
+  EnumitemFormat.new-ordered labelf
+let-math \restr = ${\mathbin{\upharpoonright}}
 let-inline ctx \small il = 
   let sz = get-font-size ctx *' 0.75
   in  read-inline (ctx |> set-font-size sz) il
 let-block ctx +small bk = 
   let sz = get-font-size ctx *' 0.75
   in  read-block (ctx |> set-font-size sz) bk
-
 let emph-color = SlydifiThemeArctic.default-config#color-emph
 let weak-color = SlydifiThemeArctic.default-config#color-weak
 let green-color = SlydifiThemeArctic.default-config#color-green
@@ -725,7 +732,7 @@ in document '<
       +centering{\fontsize(90pt){A. Solovay集合}}
     >
 
-    +frame{Solovay集合：ランダム部分をBorel近似できる集合}<
+    +frame-nofooter{Solovay集合：ランダム部分をBorel近似できる集合}<
       +lem?*?:(`lem:solovay`)<
         +p{${M}を${(2^{ℵ_0})^M < ℵ_1}を満たす内部モデルとする。実数の集合${A \subseteq \R}が\emph{${M}上Solovayなら}、次が成立：}
         +eqn?:(AZMathEquation.notag)(${
@@ -735,7 +742,8 @@ in document '<
         });
       >
       +itemize<
-        +item{\emph{${M}上のSolovay集合}${A}の気持ち：ランダム実数${x}に対して、${x}が${A}に属するかどうか${M}のパラメータと${x}に関する論理式を使って「判定」できる}<
+        +item{${A}が\emph{${M}上のSolovay集合}${\iff}ランダム実数${x}に対し、${x}が${A}に属するかどうか${M}のパラメータと${x}に関する論理式を使って${M[x]}で判定できる}<
+          +item{${M[x]}：${M\cup \set{x}}を部分クラスとして含む最小の${\ZF}のモデル（常にある）}<>
           +item{実際にはもうちょっと厳しい定義（${x}の条件や「判定」をどこでするかなど）だが、テクニカルなので立ち入らない}<>
         >
         +item{\thmref(`lem:solovay`);の証明には強制法を使う。知っていれば簡単だが、今回は省略}<>
@@ -856,6 +864,62 @@ in document '<
             +item{${\AC}がない状態でReinhardt基数が矛盾するかは未解決問題}<>
           >
       >
+    >
+
+    +frame-nofooter{Levy崩壊の基本性質}<
+      +small<+lem?:({Levy崩壊の基本性質})?:(`lem:levy-props`)<
+        +p{${\kappa}を正則基数とし、${V[G]}を${\coll{\kappa}}-強制拡大とする。}
+        +itemize?:(dot-arabic)<
+          +item{${V}の基数${\omega < \lambda < \kappa}は、${V[G]}では可算順序数となり基数ではない。}<>
+          +item{${\coll{\kappa}}-強制拡大で成り立つ命題は、${G}の取り方に依存せず、${V}で完全に計算できる。}<>
+        >
+        +p{以下、更に${\kappa}が到達不能基数とする。}
+        +itemize?:(enum-format (dot (fun i -> to-arabic (i + 2))))<
+          +item{${\kappa}は${V[G]}においても基数のままで、${\kappa = \omega_1^{V[G]}}。}<>
+          +item{${V[G]}の可算列${f \in \seq{\omega}{V[G]}}に対し、正則基数${\lambda < \kappa}があり${f \in V[G \restr \lambda]}。即ち${V[G]}の可算列は途中の${\lambda < \kappa}まで潰す段階で付加されている。}<>
+          +item{任意の${\lambda < \kappa}について、${\kappa}は${V[G \restr \lambda]}でも到達不能基数である。}<>
+          +item{${x \in V[G]}が${V[G \restr \lambda]}上ランダムなら、${V[G]}は${V[G \restr \lambda][x]}の${\coll{\kappa}}-強制拡大になる。}<>
+        >
+      >>
+    >
+
+    +frame-nofooter{}<
+      +vspace(5cm);
+      +centering{\fontsize(90pt){目標の復習：}}
+      >
+      
+    +frame-nofooter{}<
+      +vspace(0.5cm);
+      +centering{\fontsize(80pt){任意の実数の集合}}
+      +centering{\fontsize(80pt){${A \in  (\HOD^\omega)^{V[G]}}}}
+      +centering{\fontsize(80pt){に対し}}
+    >
+
+    +frame-nofooter{}<
+      +vspace(0.5cm);
+      +centering{\fontsize(90pt){${V[G]}の}}
+      +centering{\fontsize(90pt){内部モデル${M}}}
+      +centering{\fontsize(90pt){で}}
+    >
+
+    +frame-nofooter{}<
+      +centering{\fontsize(70pt){${(2^{\alef_0})^M < \alef_1^{V[G]}}}}
+      +centering{\fontsize(50pt){かつ}}
+      +centering{\fontsize(70pt){${A}: ${M}上Solovay}}
+      +centering{\fontsize(50pt){となるものを探す！}}
+    >
+
+    +frame{Levy崩壊後の${\HOD^\omega}に属す実数の集合はSolovay}<
+        +itemize<
+          +item{以下、${\kappa}を到達不能基数、${V[G]}を${\coll{\kappa}}-強制拡大とする。}<>
+          +item{\thmref(`lem:levy-props`);を認めると、\emph{${(\HOD^\omega)^{V[G]}}に属する任意の実数の集合${A}が、\thmref(`lem:solovay-lm`);の前提を満たすような${M}上でSolovay}になることが言える！}<
+            +item?:(dot-arabic){${\HOD^\omega}の定義より${\sigma \in \seq{\omega}{\On} \cap V[G]}が取れ${A = \Set{x \in \R}{\varphi(x, \sigma)}}。}<>
+            +item?:(dot-arabic){\thmref(`lem:levy-props`); (4)より、正則基数${\lambda < \kappa}が取れて${\sigma \in V[G \restr \lambda]}となる。}<>
+            +item?:(dot-arabic){(3)(5)より${M \defeq V[G\restr \lambda]}で${\kappa}は到達不能なので${(2^{\alef_0})^{V[G \restr \lambda]} < \kappa = \alef_1^{V[G]}}。}<>
+            +item?:(dot-arabic){(2)(6)より、${x \in A}は${M[x]}において「任意の${\coll{\kappa}}-強制拡大で${\varphi(x, \sigma)}が成り立つ」という論理式で書ける}<>
+            +item?:(dot-arabic){以上より${A}は${M = V[G \restr \lambda]}上Solovayで${(2^{\alef_0})^M < \alef_1}！}<>
+          >
+        >
     >
   >
 
