@@ -43,6 +43,7 @@ let emph-color = SlydifiThemeArctic.default-config#color-emph
 let weak-color = SlydifiThemeArctic.default-config#color-weak
 let green-color = SlydifiThemeArctic.default-config#color-green
 let-math \Pow = ${\mathop{\mathcal{P}}}
+let-math \pow x y = ${\mathord{\mrquad!(0.0)^{#x}#y}}
 let-math \implies = ${\Longrightarrow}
 let-math \defeq = ${\coloneq}
 let-math \Borels = ${\mathcal{B}}
@@ -74,6 +75,7 @@ let-block +from n blk =  '< +phantom(from n)<#blk;> >
 let-inline ctx \inactive ?:kosa il = read-inline ctx {\textcolor(Color.gray (Option.map-or 0.5 (fun x -> 1.0 -. x) kosa)){#il;}}
 let-math \DC = ${\mathrm{DC}}
 let-math \HOD = ${\mathrm{HOD}}
+let-math \OD = ${\mathrm{OD}}
 let-math \On = ${\mathrm{On}}
 let-math \ZF = ${\mathrm{ZF}}
 let-math \ZFC = ${\mathrm{ZFC}}
@@ -135,6 +137,7 @@ let-block ctx +exc = make-theorem ctx `演習`
 let-block ctx +notation = make-theorem ctx `記法`
 let-block ctx +thm = make-theorem ctx `定理`
 let-block ctx +lem = make-theorem ctx `補題`
+let-block ctx +fact = make-theorem ctx `事実`
 let-block ctx +cor = make-theorem ctx `系`
 let-block +proof blk = '<
   +colorbox[ lefttitle 10pt; righttitle 10pt; toptitle 2.5pt; bottomtitle 2.5pt;
@@ -575,7 +578,6 @@ in document '<
         +itemize<
           +item{\emph{強制法}：宇宙${V}に\emph{新たな元${G}}を付加した最小の外側の宇宙・\emph{強制拡大}\emph{${V[G]}}を創る技術}<
             +item{${G \nin V}であっても、${G}の「近似」全体が成す\emph{擬順序}${\P}は${V}にあるので、それを使って議論する}<>
-            +item{${ℙ}の元は自由度によって順序づけられており、${G}は${ℙ}の\emph{超フィルター}になる}<>
           >
           +item{${V[G]}は、${ℙ}-値集合の宇宙${V^ℙ}を${G}で割った物：
           \gather?:(AZMathEquation.notag)(${
@@ -585,7 +587,9 @@ in document '<
               \mqquad 
               V[G] \cong \quot{V^ℙ}{G}
             |});
-          }<>
+          }<
+            +item{${V}が${\AC}を満たすなら、${V[G]}も${\AC}を満たす}<>
+          >
         >
       >
     >
@@ -728,6 +732,47 @@ in document '<
       +itemize<
         +item{あとは「各々そういう${M}上でSolovayな実数の集合」だけを持つようなモデルが取れればよい！}<>
       >
+    >
+
+    +frame{構成要件}<
+      +itemize?:(dot-arabic)<
+        +item{どんな実数の集合も、それぞれ${(2^{ℵ_0})^M < ℵ_1}を満たすような内部モデル${M}が取れて${M}上Solovayになるような宇宙が欲しい}<>
+        +item{${\ZFC}のモデル${V}から始めるので、これは${V}の強制法拡大${V[G]}そのものではなく、その内部モデル${M \subseteq V[G]}である必要がある}<>
+        +item{しかも、Solovay性は${V[G]}の方で判断し、したがって可測性も${V[G]}で見たものになる。なので、\emph{${M}における${\R}やBorel集合の全体${\Borels}は${V[G]}のものと一致している}必要がある}<
+          +item?:(listing-itemfmt){Borel集合の全体は連続体濃度個なので、${\R}が${M}と${V[G]}で一致していればよい}<>
+        >
+        +item?:(text-label {\emph{${⤳}}}){(2), (3)を満たすのに良さそうな内部モデルが${\HOD^\omega}}<>
+      >
+    >
+
+    +frame{遺伝的に順序数の${\omega}-列で定義可能なクラス${\HOD^\omega}}<
+      +defn<
+        +itemize<
+          +item{集合${A}が\emph{順序数の${\omega}-列で定義可能}（記号：${A \in \OD^\omega}）${\defs}論理式${\varphi(x, s)}と順序数の可算列${z \in \pow{\omega}{\On}}があって、${A = \Set{x}{\varphi(x, z)}}}<>
+          +item{集合${A}が\emph{遺伝的に順序数の${\omega}-列で定義可能}（記号：${A \in \HOD^\omega}）${\defs} ${A}は自身や元、元の元……を含め${\OD^\omega}な集合だけでできている}<>
+        >
+      >
+      +itemize<
+        +item{Solovay性はランダム実数\inactive{（実は任意のジェネリック実数）}についての定義式が取れるという話だったので、結構${\HOD^\omega}性は近そうに見える}<>
+      >
+    >
+    +frame{${\HOD^\omega}の性質}<
+      +p{${\HOD^\omega}の構成は既にあるものを集めてくるという形をとっているので、どのモデル内で${\HOD^\omega}を取っているのかによって内容がかわってくる}
+      +fact<
+        +p{${M}を${\ZF + \DC}のモデルとするとき、${M}で見た${\HOD^\omega}は${\ZF + \DC}の内部モデルとなる}
+      >
+      +rem<
+        +p{実数は${\set{0,1}}の可算列で表現出来るので、${(\HOD^\omega)^{V[G]}}の実数と${V[G]}の実数は一致する。
+        特に${(\HOD^\omega)^V[G]}に属する実数の集合については、${V[G]}でみても${(\HOD^\omega)^{V[G]}}でみても可測性は一致する！}
+      >
+    >
+    +frame{よい強制法の選択：Levy崩壊${\coll{\kappa}}}<
+      +p{あとは良い強制法を選んで${V[G]}を取り、そこでの${\HOD^\omega}に属す実数の集合が以下を満たすようになっていればよい：}
+      +itemize<
+        +item{${\HOD^\omega}に属する実数の集合${A}が何らかの（${A}によって異っていてもよい）${M}上でSolovayになる}<>
+        +item{そんな${M}は${V[G]}でみると${(2^{ℵ_0})^M < ℵ_1^{V[G]}}を満たしている}<>
+      >
+      +p{結論から言うと、\emph{到達不能基数${\kappa}を${\omega_1}に潰すLevy崩壊${\coll{\kappa}}}がちょうどこれに最適！}
     >
   >
 
