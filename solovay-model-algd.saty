@@ -1033,7 +1033,7 @@ in document '<
     +frame-nofooter{Shelahの定理のあらまし}<
       +itemize<+item{実際には次の形の定理を示している：}<>>
       +lem?*?:(`lem:accessible`)<
-        +p{${\ZF+\CC}を仮定し、更に任意の${\mathbf{\Sigma}^1_2}-集合が可測で、実数${z}が${\omega_1^{L[z]} = \omega_1^V}を満たすとする。ことのき、非可測な${\Sigma^1_3}-集合が存在する。}
+        +p{${\ZF+\CC}を仮定し、更に任意の${\mathbf{\Sigma}^1_2}-集合が可測で、実数${z}が${\omega_1^{L[z]} = \omega_1^V}を満たすとする。このとき、非可測な${\Sigma^1_3}-集合が存在する。}
       >
       +itemize<
         +item{${\mathbf{\Sigma}^1_2}-集合：${\mathbf{\Sigma}^1_3}の一個下の複雑性のもの。${\exists \forall \Borels}の形で書ける集合。}<>
