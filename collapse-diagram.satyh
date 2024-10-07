@@ -36,8 +36,10 @@ end = struct
   open TikZyFi
   open List
 
+  
   type presense = 
       | Sticky
+      | BecomesOmega1 of int * int option
       | Destroyed of int
   type ordinal = Ordinal of string * math * length * presense
   type universe = Universe of string * math * length
@@ -61,10 +63,19 @@ end = struct
     [ Ordinal (`omega`, ${\omega}, 1.5cm, Sticky) 
     ; Ordinal (`omega1`, ${\omega_1^V}, 2.5cm, Destroyed 1)
     ; Ordinal (`omega2`, ${\omega_2^V}, 3.5cm, Destroyed 1)
-    ; Ordinal (`lambda`, ${\lambda}, 6.0cm, Destroyed 2)
+    ; Ordinal (`lambda`, ${\lambda}, 6.0cm, BecomesOmega1 (1, Some 2))
     ; Ordinal (`lambda-pow`, ${(2^\lambda)^V}, 7.0cm, Destroyed 2)
-    ; Ordinal (`kappa`, ${(2^\lambda)^V}, 7.0cm, Sticky)
+    ; Ordinal (`kappa`, ${\kappa}, 8.5cm, BecomesOmega1 (2, None))
     ]
+
+  let destroy-level p = match p with
+    | Sticky -> None
+    | Destroyed i -> Some i
+    | BecomesOmega1 (_, i) -> i
+
+  let becomes-omega-1 p = match p with
+    | BecomesOmega1 (i, _) -> Some i
+    | _ -> None
 
   let make univs ords layer =
     let ordinal name i x y n = 
@@ -83,65 +94,83 @@ end = struct
           ; [polyline (map coord [(x -' 5pt, y); (x +' 5pt, y)])]
           ] 
     in concat 
-      [ concat-map
-        (fun (i, name, x, v) -> (
-          let x = 1cm *' x in
-          let ordinal switch n = ordinal (name ^ `-` ^ n) (if switch then Some i else None) x in
-          let on = name ^ `-On` in
-          concat 
-            [ ordinal false `omega` 1.5 ${\omega}
-            ; ordinal true `omega1V` 2.5 ${\omega_1^V}
-            ; ordinal true `omega2V` 3.5 ${\omega_2^V}
-            ; [node-at (coord (x +' 6mm, 4.25cm)) {${\vdots}}]
-            ; ordinal (i > 1) `lambda` 6.0 ${\lambda}
-            ; ordinal (i > 1) `lambda-pow` 7.0 ${(2^\lambda)^V}
-            ; if i == 1 then [] else []
-            ; ordinal false `kappa` 8.5 (if i == 2 then ${\kappa} else ${\kappa})
-            ]
-        ))
-        [ (0, `V`, -5., {${V}})
-        ; (1, `V-Glam`, 0., {${V[G \restr \lambda]}})
-        ; (2, `V-G`, 5., {${V[G]}})
-        ]
-      ; [node-at ?:[if layer == 3 then tc emph-color else tc Color.black; phantom (layer < 3)] (move-to (east-of `V-Glam-lambda`) (4pt, -4pt)) 
-          {\small{${= \omega_1^{V[G \restr \lambda]}}}}]
-      ; [node-at (east-of `V-G-kappa`) {\small{${= \omega_1^{V[G]}}}}]
-      ; let omega1 = east-of ?:(-5pt) `V-Glam-omega1V` in
-        let omega2 = east-of ?:(-5pt) `V-Glam-omega2V` in
-        let base-line = (omega1, move-to omega1 (0mm, 1mm)) in
-        let omega = east-of `V-Glam-omega` in
-        let start-1 = omega in
-        let start-2 = omega in
-        let start-3 = omega in
-        let edge-color p = if p then emph-color else weak-color in
-        let omega-1-mid = move-to (between omega1 start-1) (2mm, 0cm) in
-        let omega-2-mid = move-to (between omega2 start-2) (4mm, 0cm) in
-        let lam-below = proj (move-to (south-east-of `V-Glam-lambda`) (0cm, -7.5mm)) base-line in
-        let lam-below-mid = move-to (between lam-below start-3) (7mm, 0cm) in
-        [ spline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
-            [ start-1
-            ; move-to (between  start-1 omega1) (2mm, 0mm)
-            ; omega1
-            ]
-        ; polyline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
-            [ move-to omega1 (-1pt, -6pt); omega1; move-to omega1 (4pt, -2pt)]
-        ; spline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
-            [ start-2
-            ; move-to (between ?:(1. /. 3.) start-2 omega2) (5mm, 0mm)
-            ; move-to (between ?:(2. /. 3.) start-2 omega2) (5mm, 0mm)
-            ; omega2
-            ]
-        ; polyline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
-            [ move-to omega2 (0pt, -4pt); omega2; move-to omega2 (4pt, 0pt)]
-        ; spline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
-            [ start-3
-            ; move-to (between ?:(1. /. 4.) start-3 lam-below) (8mm, 0mm)
-            ; move-to (between ?:(3. /. 4.) start-3 lam-below) (8mm, 0mm)
-            ; lam-below              
-            ]
-        ; polyline?:[phantom (layer <= 1); lw 1pt; pc (edge-color (layer == 2)) ] 
-            [ move-to lam-below (0pt, -4pt); lam-below; move-to lam-below (4pt, 0pt)]
-        ]
+      [ concat-mapi
+          (fun i (Universe (univ-name, _, x))-> 
+            concat-map (fun  (Ordinal (ord-name, ord, y, presense)) -> (
+              let start-layer = Int.max (2 * (i - 1) + 2) 0 in
+              let name = univ-name ^ `-` ^ ord-name in
+              let col = 
+                if i == 0 || layer < start-layer || Option.map-or true (fun l -> i < l) (destroy-level presense)
+                then Color.black
+                else if layer == start-layer
+                then emph-color
+                else weak-color
+              in 
+              let is-phantom = Option.map-or false (fun l -> i >= l && layer >= 2 * l + 2) (destroy-level presense)  in
+              let is-omega-1 = 
+                  not is-phantom &&
+                  Option.map-or true 
+                    (fun l -> 2 * (l - 1) + 3 <= layer && i >= l
+                    && Option.map-or true (fun d -> i < d) (destroy-level presense)) 
+                    ( becomes-omega-1 presense)
+                    
+                     in
+              let memori = polyline ?:[pc col; phantom is-phantom] (map coord [(x -' 5pt, y); (x +' 5pt, y)]) in
+              let ord-node = node-at ?:[named name; tc col; phantom is-phantom] (coord (x +' 7mm, y -' 4pt)) {\small{${#ord}}} in
+              let omega1-node = 
+                  Option.to-list 
+                    (Option.map 
+                      (fun l -> 
+                        (let om-1-uni = 
+                              Option.map-or ${} (fun (Universe(_, u, _)) -> u) (List.nth l univs )
+                          in node-at ?:[phantom (not is-omega-1)] (move-to (east-of name) (2pt, -2pt)) {\small{${ = \omega_1^{#om-1-uni}}}}
+                        )
+                      )
+                      (becomes-omega-1 presense) 
+                    )in
+              concat [[memori]; [ord-node]; omega1-node]
+          ))
+          ords)
+        univs
+      % ; [node-at ?:[if layer == 3 then tc emph-color else tc Color.black; phantom (layer < 3)] (move-to (east-of `V-Glam-lambda`) (4pt, -4pt)) 
+      %     {\small{${= \omega_1^{V[G \restr \lambda]}}}}]
+      % ; [node-at (east-of `V-G-kappa`) {\small{${= \omega_1^{V[G]}}}}]
+      % ; let omega1 = east-of ?:(-5pt) `V-Glam-omega1V` in
+      %   let omega2 = east-of ?:(-5pt) `V-Glam-omega2V` in
+      %   let base-line = (omega1, move-to omega1 (0mm, 1mm)) in
+      %   let omega = east-of `V-Glam-omega` in
+      %   let start-1 = omega in
+      %   let start-2 = omega in
+      %   let start-3 = omega in
+      %   let edge-color p = if p then emph-color else weak-color in
+      %   let omega-1-mid = move-to (between omega1 start-1) (2mm, 0cm) in
+      %   let omega-2-mid = move-to (between omega2 start-2) (4mm, 0cm) in
+      %   let lam-below = proj (move-to (south-east-of `V-Glam-lambda`) (0cm, -7.5mm)) base-line in
+      %   let lam-below-mid = move-to (between lam-below start-3) (7mm, 0cm) in
+      %   [ spline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
+      %       [ start-1
+      %       ; move-to (between  start-1 omega1) (2mm, 0mm)
+      %       ; omega1
+      %       ]
+      %   ; polyline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
+      %       [ move-to omega1 (-1pt, -6pt); omega1; move-to omega1 (4pt, -2pt)]
+      %   ; spline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
+      %       [ start-2
+      %       ; move-to (between ?:(1. /. 3.) start-2 omega2) (5mm, 0mm)
+      %       ; move-to (between ?:(2. /. 3.) start-2 omega2) (5mm, 0mm)
+      %       ; omega2
+      %       ]
+      %   ; polyline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
+      %       [ move-to omega2 (0pt, -4pt); omega2; move-to omega2 (4pt, 0pt)]
+      %   ; spline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
+      %       [ start-3
+      %       ; move-to (between ?:(1. /. 4.) start-3 lam-below) (8mm, 0mm)
+      %       ; move-to (between ?:(3. /. 4.) start-3 lam-below) (8mm, 0mm)
+      %       ; lam-below              
+      %       ]
+      %   ; polyline?:[phantom (layer <= 1); lw 1pt; pc (edge-color (layer == 2)) ] 
+      %       [ move-to lam-below (0pt, -4pt); lam-below; move-to lam-below (4pt, 0pt)]
+      %   ]
       ; concat-map draw-universe default-universes
       ]
 

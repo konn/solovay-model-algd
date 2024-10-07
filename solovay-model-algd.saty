@@ -734,7 +734,7 @@ in document '<
       >
     >
 
-    +frame?:(5){Levy崩壊のイメージ}<
+    +frame?:(6){Levy崩壊のイメージ}<
       +centering(
         open List in open TikZyFi in 
         let layer = SlydifiParam.get layer in
