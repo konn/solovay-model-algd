@@ -16,6 +16,8 @@ module Utils : sig
   val concat-mapi: (int -> 'a -> 'b list) -> 'a list -> 'b list
   val concat-maths: math list -> math
   val scan-left: ('a -> 'b -> 'a) -> 'a -> 'b list -> 'a list
+  val map-maybe: ('a -> 'b option) -> 'a list -> 'b list
+  val filter-option: ('a -> bool) -> 'a option -> 'a option
 end = struct
   open Algorithms
   let apps xs = fold-map Fn.id Fn.compose Fn.id xs
@@ -34,4 +36,15 @@ end = struct
   let-rec scan-left
     | f acc []  = [acc]
     | f acc (x :: xs)  = let acc2 = f acc x in acc2 :: scan-left f acc2 xs
+
+  let-rec map-maybe f xs = 
+    match xs with
+    | [] -> []
+    | x :: xs -> 
+      (match f x with
+      | None -> map-maybe f xs
+      | Some y -> y :: map-maybe f xs 
+      )
+  let filter-option f mx = 
+        Option.and-then (fun x -> (if f x then Some x else None)) mx
 end

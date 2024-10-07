@@ -77,78 +77,91 @@ end = struct
     | BecomesOmega1 (i, _) -> Some i
     | _ -> None
 
+  type target = 
+    | Concrete of string
+    | Below of string
+
   let make univs ords layer =
-    let-mutable coll-count <- 0 in
-    let num-colls = List.length (List.filter (fun (Ordinal (_, _, _, p)) -> Option.is-some (destroy-level p)) ords)
-    in concat 
+    concat 
       [ concat-mapi
-          (fun i (Universe (univ-name, _, x))-> 
-            ( let () = coll-count <- 0 in
-              let omega-name = univ-name ^ `-omega` in
-              concat-mapi (fun j (Ordinal (ord-name, ord, y, presense)) -> (
-                let start-layer = Int.max (2 * (i - 1) + 2) 0 in
-                let name = univ-name ^ `-` ^ ord-name in
-                let off = float !coll-count in
-                let () = 
-                  Option.map-or () 
-                    (fun _ -> (coll-count <- !coll-count + 1))
-                  (destroy-level presense) in
-                let col = 
-                  if i == 0 || layer < start-layer || Option.map-or true (fun l -> i < l) (destroy-level presense)
-                  then Color.black
-                  else emph-color
-                in 
-                let is-phantom = Option.map-or false (fun l -> i >= l && layer >= 2 * l + 1) (destroy-level presense)  in
-                let is-omega-1 = 
-                    not is-phantom &&
-                    Option.map-or true 
-                      (fun l -> 2 * (l - 1) + 3 <= layer && i >= l
-                      && Option.map-or true (fun d -> i < d) (destroy-level presense)) 
-                      ( becomes-omega-1 presense)
-                      
-                      in
-                let memori = polyline ?:[pc col; phantom is-phantom] (map coord [(x -' 5pt, y); (x +' 5pt, y)]) in
-                let ord-node = node-at ?:[named name; tc col; phantom is-phantom] (coord (x +' 7mm, y -' 4pt)) {\small{${#ord}}} in
-                let omega1-node = 
-                    Option.to-list 
-                      (Option.map 
-                        (fun l -> 
-                          (let om-1-uni = 
-                                Option.map-or ${} (fun (Universe(_, u, _)) -> u) (List.nth l univs )
-                            in node-at ?:[phantom (not is-omega-1)] (move-to (east-of name) (2pt, -2pt)) {\small{${ = \omega_1^{#om-1-uni}}}}
+          (fun i (Universe (univ-name, _, x))->
+            
+            ( let coll-targs = 
+                    map-maybe 
+                      (fun (Ordinal (oname, _, _, p)) -> 
+                        Option.or
+                          (Option.map (fun _ -> Concrete (univ-name ^ `-` ^ oname))
+                            (filter-option
+                            (fun l -> i == l && layer == 2 * (l - 1) + 2)
+                            (destroy-level p))
                           )
-                        )
-                        (becomes-omega-1 presense) 
+                          (Option.map (fun _ -> Below (univ-name ^ `-` ^ oname))
+                            (filter-option
+                            (fun l -> i == l && layer == 2 * (l - 1) + 2)
+                            (becomes-omega-1 p)
+                            )
+                          )
                       )
-                in let destroyer = 
-                    (Option.map-or []
-                      (fun l ->
-                        (if i == l  && layer == 2 * (l - 1) + 2
-                          then
-                            let omega =
-                                  between ?:(off /. float (num-colls - 1)) 
-                                  (north-east-of omega-name)
-                                  (south-east-of omega-name)
-                                  in
-                            let self = east-of ?:(-1.5mm) name in
-                            let ru = move-to self (2.5mm *' (off +. 1.), 0pt) in
-                            let rd = move-to 
-                                  (proj omega (ru, move-to ru (0pt, -1pt))) 
-                                  (0pt, 4pt)
-                                in
-                            [ polyline?:[pc emph-color; lw 1pt] 
-                                [omega; rd; ru; self]
-                            ; polyline?:[pc emph-color; lw 1pt]
-                                [move-to self (4pt, -4pt); self; move-to self (4pt, 4pt)]
-                            ]
-                          else []
+                      ords
+              in 
+              let num-colls = List.length coll-targs in
+              let omega-name = univ-name ^ `-omega` in
+              concat 
+                [concat-mapi (fun j (Ordinal (ord-name, ord, y, presense)) -> (
+                  let start-layer = Int.max (2 * (i - 1) + 2) 0 in
+                  let name = univ-name ^ `-` ^ ord-name in
+                  let col = 
+                    if i == 0 || layer < start-layer || Option.map-or true (fun l -> i < l) (destroy-level presense)
+                    then Color.black
+                    else emph-color
+                  in 
+                  let is-phantom = Option.map-or false (fun l -> i >= l && layer >= 2 * l + 1) (destroy-level presense)  in
+                  let is-omega-1 = 
+                      not is-phantom &&
+                      Option.map-or true 
+                        (fun l -> 2 * (l - 1) + 3 <= layer && i >= l
+                        && Option.map-or true (fun d -> i < d) (destroy-level presense)) 
+                        ( becomes-omega-1 presense)
+                        
+                        in
+                  let memori = polyline ?:[pc col; phantom is-phantom] (map coord [(x -' 5pt, y); (x +' 5pt, y)]) in
+                  let ord-node = node-at ?:[named name; tc col; phantom is-phantom] (coord (x +' 7mm, y -' 4pt)) {\small{${#ord}}} in
+                  let omega1-node = 
+                      Option.to-list 
+                        (Option.map 
+                          (fun l -> 
+                            (let om-1-uni = 
+                                  Option.map-or ${} (fun (Universe(_, u, _)) -> u) (List.nth l univs )
+                              in node-at ?:[phantom (not is-omega-1)] (move-to (east-of name) (2pt, -2pt)) {\small{${ = \omega_1^{#om-1-uni}}}}
+                            )
+                          )
+                          (becomes-omega-1 presense) 
                         )
-                      )
-                      (destroy-level presense)
-                    )
-                in concat [[memori]; [ord-node]; omega1-node; destroyer]
-          )))
-          ords)
+                  in concat [[memori]; [ord-node]; omega1-node]
+                ))
+                ords
+              ; concat-mapi
+                  (fun i dest -> (
+                    let self = match dest with
+                          | Concrete oname -> east-of oname
+                          | Below oname -> south-west-of ?:(2mm) oname
+                    in let omega =
+                      between ?:(float i /. float (num-colls - 1)) 
+                        (move-to (north-east-of omega-name) (0pt, -2pt))
+                        (move-to (south-east-of omega-name) (0pt,  2pt))
+                      in
+                    let rd = move-to omega (5.5mm *' (float i +. 1.), 0pt) in
+                    let ru = proj self (rd, move-to rd (0pt, -1pt))
+                        in
+                    [ polyline?:[pc emph-color; lw 1pt] 
+                        [omega; rd; ru; self]
+                    ; polyline?:[pc emph-color; lw 1pt]
+                        [move-to self (4pt, -4pt); self; move-to self (4pt, 4pt)]
+                      ]
+                  ))
+                  coll-targs
+              ]
+        ))
         univs
       ; concat-map draw-universe default-universes
       ]
