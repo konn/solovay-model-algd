@@ -57,8 +57,9 @@ type line = LineABC of (|a: float; b: float; c: float|)
 
 type position =
   | Absolute of point 
-  | Relative of direction * string
-  | Between of position * position
+  | Relative of length option * direction * string
+  | Between of float option * position * position
+  | MoveTo of position * point
   | Intersect of (position * position) * (position * position)
   | Projection of position * (position * position)
 
@@ -93,19 +94,20 @@ module TikZyFi : sig
   val default-node-style: node-style
   val default-path-style: path-style
   val coord: point -> position
-  val between: position -> position -> position
-  val center-of: string -> position
+  val between: float ?-> position -> position -> position
+  val center-of: length ?-> string -> position
   val intersect: (position * position) -> (position * position) -> position
   val proj: position -> (position * position) -> position
-  val north-of: string -> position
-  val south-of: string -> position
-  val west-of: string -> position
-  val east-of: string -> position
-  val north-west-of: string -> position
-  val north-east-of: string -> position
-  val south-west-of: string -> position
-  val south-east-of: string -> position
-  val override-node: string list -> (node-style -> node-style) list -> element list -> element list
+  val north-of: length ?-> string -> position
+  val south-of: length ?-> string -> position
+  val west-of: length ?-> string -> position
+  val east-of: length ?-> string -> position
+  val move-to: position -> point -> position
+  val north-west-of: length ?-> string -> position
+  val north-east-of: length ?-> string -> position
+  val south-west-of: length ?-> string -> position
+  val south-east-of: length ?-> string -> position
+  val override-node: length ?-> string list -> (node-style -> node-style) list -> element list -> element list
   direct \matrix: [matrix-config?; (node list) list] inline-cmd
   direct \tikzy: [config?; element list] inline-cmd
 end = struct
@@ -438,16 +440,19 @@ end = struct
   let-rec get-dir-of pad poss pos =
       match pos with
       | Absolute pt -> pt
-      | Relative (dir, parent) ->
+      | MoveTo (pos, v) -> Utils.add-pt (get-dir-of pad poss pos) v
+      | Relative (mpad, dir, parent) ->
         ( let targ = 
-          Option.expect (`No target node: ` ^ parent)
-          (TreeMap.get String.ord parent poss)
-        in dir-of pad dir targ
+            Option.expect (`No target node: ` ^ parent)
+            (TreeMap.get String.ord parent poss) in
+          let pad = Option.from pad mpad
+          in dir-of pad dir targ
         )
-      | Between (src, tgt) -> 
+      | Between (r, src, tgt) -> 
         let src-pt = get-dir-of pad poss src
         in let tgt-pt = get-dir-of pad poss tgt
-        in Utils.scale-pt (Utils.add-pt tgt-pt src-pt) 0.5
+        in let r = Option.from 0.5 r
+        in Utils.add-pt (Utils.scale-pt src-pt (1. -. r)) (Utils.scale-pt tgt-pt r)
       | Intersect ((src1, tgt1), (src2, tgt2)) ->
           let src1 = get-dir-of pad poss src1 in
           let tgt1 = get-dir-of pad poss tgt1 in
@@ -465,16 +470,17 @@ end = struct
 
   let intersect l1 l2 = Intersect (l1, l2)
   let coord pt = Absolute pt
-  let between src tgt = Between (src, tgt)
-  let center-of s = Relative (Center, s)
-  let north-of s = Relative (North, s)
-  let south-of s = Relative (South, s)
-  let west-of s = Relative (West, s)
-  let east-of s = Relative (East, s)
-  let north-east-of s = Relative (NorthEast, s)
-  let north-west-of s = Relative (NorthWest, s)
-  let south-east-of s = Relative (SouthEast, s)
-  let south-west-of s = Relative (SouthWest, s)
+  let between ?:r src tgt = Between (r, src, tgt)
+  let center-of ?:d s = Relative (d, Center, s)
+  let north-of ?:d s = Relative (d, North, s)
+  let south-of ?:d s = Relative (d, South, s)
+  let move-to pos v = MoveTo (pos, v)
+  let west-of ?:d s = Relative (d, West, s)
+  let east-of ?:d s = Relative (d, East, s)
+  let north-east-of ?:d s = Relative (d, NorthEast, s)
+  let north-west-of ?:d s = Relative (d, NorthWest, s)
+  let south-east-of ?:d s = Relative (d, SouthEast, s)
+  let south-west-of ?:d s = Relative (d, SouthWest, s)
 
   let resolve-raw-node ctx cfg (name, raw) poss =
     let ext = extent-of raw#body
@@ -491,8 +497,9 @@ end = struct
   let-rec toEdges-pos p =
     match p with
       | Absolute _ -> []
-      | Relative (_, targ) -> [targ]
-      | Between (src, tgt) -> List.append (toEdges-pos src) (toEdges-pos tgt)
+      | Relative (_, _ , targ) -> [targ]
+      | Between (_, src, tgt) -> List.append (toEdges-pos src) (toEdges-pos tgt)
+      | MoveTo (pos, _) -> toEdges-pos pos
       | Intersect ((src1, tgt1), (src2, tgt2)) -> 
           concat-map toEdges-pos [src1; tgt1; src2; tgt2]
       | Projection (pt, (src, tgt)) -> 

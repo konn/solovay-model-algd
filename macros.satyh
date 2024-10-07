@@ -1,0 +1,159 @@
+@require: class-slydifi/theme/arctic
+@require: class-slydifi/slydifi
+@require: ruby/ruby
+@require: easytable/easytable
+@require: bibyfi/bibyfi
+@require: bibyfi/bibyfi-IEEETran
+@require: azmath/azmath
+@require: matrix/matrix
+@require: colorbox/colorbox
+@require: arrows/arrows
+@require: arrows/commands
+@require: fss/fss
+@require: fss/fonts
+@require: latexcmds/latexcmds
+@require: fss/style
+@require: base/list-ext
+@require: enumitem/enumitem
+@require: figbox/figbox
+@require: arrows/arrows
+@require: base/list-ext
+@require: colorbox/colorbox
+@require: bibyfi/bibyfi
+@require: annot
+@import: tikzyfi
+@import: utils
+@import: references
+
+let-math \restr = ${\mathbin{\upharpoonright}}
+let-inline ctx \small il = 
+  let sz = get-font-size ctx *' 0.75
+  in  read-inline (ctx |> set-font-size sz) il
+let-block ctx +small bk = 
+  let sz = get-font-size ctx *' 0.75
+  in  read-block (ctx |> set-font-size sz) bk
+let emph-color = SlydifiThemeArctic.default-config#color-emph
+let weak-color = SlydifiThemeArctic.default-config#color-weak
+let green-color = SlydifiThemeArctic.default-config#color-green
+let-math \Pow = ${\mathop{\mathcal{P}}}
+let-math \cf = ${\mathop{\mathop{cf}}}
+let-math \seq x y = ${\mathord{\mrquad!(0.0)^{#x}#y}}
+let-math \ran= ${\mathop{\mathrm{ran}}}
+let-math \implies = ${\Longrightarrow}
+let-math \defeq = ${\coloneq}
+let-math \Borels = ${\mathcal{B}}
+let-math \null = ${\mathord{𝗇𝗎𝗅𝗅}}
+let-math \meager = ${\mathord{𝗆𝖾𝖺𝗀𝖾𝗋}}
+let-math \alef = ${ℵ}
+let-math \overset m-over m =
+  text-in-math MathOrd (fun ctx -> (
+    let font-size = ctx |> get-font-size in
+    let ib-over = embed-math (ctx |> set-font-size (font-size *' 0.85)) m-over in
+    let ib-over = inline-fil ++ ib-over ++ inline-fil in
+    let ib-m = embed-math ctx m in
+    let ib-sp = inline-graphics 0pt (font-size *' 0.1) 0pt (fun _ -> []) in
+    line-stack-bottom [ib-over; ib-sp; ib-m]
+  ))
+
+let-math \iff = ${\mathrel{\Longleftrightarrow}}
+let-math \defs = ${\mathrel{\overset{\text!{def}}{\Longleftrightarrow}}}
+let-math \symdiff = ${\mathbin{△}}
+let set-for-each-script setf ctx =
+  ctx |> setf HanIdeographic |> setf Kana
+      |> setf Latin |> setf OtherScript
+
+let set-all-fonts fspec =
+  set-for-each-script (fun scr -> set-font scr fspec)
+
+let-inline ctx \emoji it =
+  let ctx1 = set-all-fonts (`fonts-noto-emoji:NotoEmoji-Regular`, 1., 0.) ctx in
+  read-inline ctx1 it
+let-math \ell  = 
+  text-in-math MathOrd (fun ctx -> 
+    read-inline (set-math-font `stix` ctx) {${\mathcal{l}}}
+  )
+let-inline ctx \inactive ?:kosa il = read-inline ctx {\textcolor(Color.gray (Option.map-or 0.5 (fun x -> 1.0 -. x) kosa)){#il;}}
+let-math \DC = ${\mathrm{DC}}
+let-math \CH = ${\mathrm{CH}}
+let-math \HOD = ${\mathrm{HOD}}
+let-math \OD = ${\mathrm{OD}}
+let-math \On = ${\mathrm{On}}
+let-math \ZF = ${\mathrm{ZF}}
+let-math \ZFC = ${\mathrm{ZFC}}
+let-math \AC = ${\mathrm{AC}}
+let-math \LM = ${\mathrm{LM}}
+let-math \BP = ${\mathrm{BP}}
+let-math \CC = ${\mathrm{CC}}
+let-math \Col = ${\mathop{\mathrm{Col}}}
+let-math \coll kappa = ${\Col\p{\omega, \mathord{<} #kappa}}
+let-math \R = ${\mathbb{R}}
+let-math \Q = ${\mathbb{Q}}
+let-math \P = ${\mathbb{P}}
+
+let mid-space-ratio = 0.1875
+let-math \Set a b = ${\set-builder{\mrquad!(mid-space-ratio)#a\mrquad!(mid-space-ratio)}{\mrquad!(mid-space-ratio)#b\mrquad!(mid-space-ratio)}}
+let gr-slash-m thk vlen fsize color =
+
+% 基準となる横の位置 (h) 及び 縦の位置 (v) の座標。
+let hmin = (0.0pt -' fsize) *' 0.2 in
+let h0 = 0pt in
+let hmax = fsize *' 0.2 in
+let va = vlen in
+
+% 結ぶことになる点の座標。
+let (x0, y0) = (5pt, va) in
+let (x1, y1) = (-5pt, 0.0pt -' va) in
+
+let path =
+  start-path (x0, y0)
+    |> line-to (x1, y1)
+    |> terminate-path
+in
+let xmin = hmin in
+let xmax = hmax in
+(
+  [ draw-text (0pt, 0pt) (read-inline (get-initial-context 2pt (command \math) |> set-text-color Color.white) {${/}})
+  ; stroke thk color path],
+  (xmin, 0.0pt -' vlen), (xmax, vlen),
+  (fun _ -> 0pt)
+)
+let-math \quot over under =
+open AZMathParens in
+let over = math-transform (raise-inline 2.5pt) MathOrd over in
+let under = math-transform (raise-inline -2.5pt) MathOrd under in
+let lparen = empty-bracket-l in
+let mparen = paren-scheme (gr-slash-m 0.75pt) half-height-default in
+let rparen = empty-bracket-r in
+math-paren-with-middle lparen rparen mparen [${\mrquad!(mid-space-ratio)#over\mrquad!(mid-space-ratio)};  ${\mrquad!(mid-space-ratio)#under\mrquad!(mid-space-ratio)}]
+
+let gr-abs-bracket-m thk vlen fsize color =
+
+% 基準となる横の位置 (h) 及び 縦の位置 (v) の座標．
+let hmin = fsize *' (-0.2) in
+let h0 = 0pt in
+let hmax = fsize *' 0.2 in
+let va = vlen in
+
+% 結ぶことになる点の座標．
+let (x0, y0) = (0pt, va) in
+let (x1, y1) = (0pt, 0.0pt -' va) in
+
+let path =
+  start-path (x0, y0)
+    |> line-to (x1, y1)
+    |> terminate-path
+in
+let xmin = hmin in
+let xmax = hmax in
+(
+  [stroke thk color path],
+  (xmin, 0.0pt -' vlen), (xmax, vlen),
+  (fun _ -> 0pt)
+)
+
+let-math \Seq m m-cond =
+open AZMathParens in
+let lparen = paren-scheme (gr-angle-bracket 0.5pt true) half-height-default in
+let mparen = paren-scheme (gr-abs-bracket-m 0.5pt) half-height-default in
+let rparen = paren-scheme (gr-angle-bracket 0.5pt false) half-height-default in
+math-paren-with-middle lparen rparen mparen [${\mrquad!(mid-space-ratio)#m\mrquad!(mid-space-ratio)};  ${\mrquad!(mid-space-ratio)#m-cond\mrquad!(mid-space-ratio)}]

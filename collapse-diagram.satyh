@@ -1,0 +1,149 @@
+@require: class-slydifi/theme/arctic
+@require: class-slydifi/slydifi
+@require: ruby/ruby
+@require: easytable/easytable
+@require: bibyfi/bibyfi
+@require: bibyfi/bibyfi-IEEETran
+@require: azmath/azmath
+@require: matrix/matrix
+@require: colorbox/colorbox
+@require: arrows/arrows
+@require: arrows/commands
+@require: fss/fss
+@require: fss/fonts
+@require: latexcmds/latexcmds
+@require: fss/style
+@require: base/list-ext
+@require: enumitem/enumitem
+@require: figbox/figbox
+@require: arrows/arrows
+@require: base/list-ext
+@require: colorbox/colorbox
+@require: bibyfi/bibyfi
+@require: annot
+@import: tikzyfi
+@import: utils
+@import: macros
+
+module Collapse : sig
+  val diagram: int -> TikZyFi.element list
+  type ordinal
+  type universe
+  type presense
+  val make: universe list -> ordinal list -> int -> TikZyFi.element list
+end = struct
+  open Utils
+  open TikZyFi
+  open List
+
+  type presense = 
+      | Sticky
+      | Destroyed of int
+  type ordinal = Ordinal of string * math * length * presense
+  type universe = Universe of string * math * length
+
+  let draw-universe: universe -> element list =
+    fun (Universe (name, univ, x)) ->
+      (let on = name ^ `-On` in
+        [ node-at ?:[named name] (coord (x, 0cm)) {${#univ}}
+        ; node-at ?:[named on] (coord (x, 10cm)) {${\On}}
+        ; arrow (north-of name) (south-of on)
+        ]
+      )
+  
+  let default-universes: universe list =
+    [ Universe (`V`, ${V}, -5cm)
+    ; Universe (`V-Glam`, ${V[G \restr \lambda]}, 0cm)
+    ; Universe (`V-G`, ${V[G]}, 5cm)
+    ]
+  
+  let default-ordinals: ordinal list =
+    [ Ordinal (`omega`, ${\omega}, 1.5cm, Sticky) 
+    ; Ordinal (`omega1`, ${\omega_1^V}, 2.5cm, Destroyed 1)
+    ; Ordinal (`omega2`, ${\omega_2^V}, 3.5cm, Destroyed 1)
+    ; Ordinal (`lambda`, ${\lambda}, 6.0cm, Destroyed 2)
+    ; Ordinal (`lambda-pow`, ${(2^\lambda)^V}, 7.0cm, Destroyed 2)
+    ; Ordinal (`kappa`, ${(2^\lambda)^V}, 7.0cm, Sticky)
+    ]
+
+  let make univs ords layer =
+    let ordinal name i x y n = 
+      let y = 1cm *' y in
+          concat 
+          [ if Option.map-or false (fun i -> i > 0) i
+            then 
+              let i = Option.from 0 i in
+              let start = 2 * (i - 1) + 2 in
+              [ node-at ?:[tc emph-color; named name; phantom (layer > start)] (coord (x +' 7mm, y -' 4pt)) 
+                  {\small{${#n}}}
+              ; node-at ?:[tc weak-color; phantom (layer < start)] (coord (x +' 7mm, y -' 4pt)) 
+                  {\small{${#n}}}
+              ]
+            else [node-at ?:[named name] (coord (x +' 7mm, y -' 4pt)) {\small{${#n}}}]
+          ; [polyline (map coord [(x -' 5pt, y); (x +' 5pt, y)])]
+          ] 
+    in concat 
+      [ concat-map
+        (fun (i, name, x, v) -> (
+          let x = 1cm *' x in
+          let ordinal switch n = ordinal (name ^ `-` ^ n) (if switch then Some i else None) x in
+          let on = name ^ `-On` in
+          concat 
+            [ ordinal false `omega` 1.5 ${\omega}
+            ; ordinal true `omega1V` 2.5 ${\omega_1^V}
+            ; ordinal true `omega2V` 3.5 ${\omega_2^V}
+            ; [node-at (coord (x +' 6mm, 4.25cm)) {${\vdots}}]
+            ; ordinal (i > 1) `lambda` 6.0 ${\lambda}
+            ; ordinal (i > 1) `lambda-pow` 7.0 ${(2^\lambda)^V}
+            ; if i == 1 then [] else []
+            ; ordinal false `kappa` 8.5 (if i == 2 then ${\kappa} else ${\kappa})
+            ]
+        ))
+        [ (0, `V`, -5., {${V}})
+        ; (1, `V-Glam`, 0., {${V[G \restr \lambda]}})
+        ; (2, `V-G`, 5., {${V[G]}})
+        ]
+      ; [node-at ?:[if layer == 3 then tc emph-color else tc Color.black; phantom (layer < 3)] (move-to (east-of `V-Glam-lambda`) (4pt, -4pt)) 
+          {\small{${= \omega_1^{V[G \restr \lambda]}}}}]
+      ; [node-at (east-of `V-G-kappa`) {\small{${= \omega_1^{V[G]}}}}]
+      ; let omega1 = east-of ?:(-5pt) `V-Glam-omega1V` in
+        let omega2 = east-of ?:(-5pt) `V-Glam-omega2V` in
+        let base-line = (omega1, move-to omega1 (0mm, 1mm)) in
+        let omega = east-of `V-Glam-omega` in
+        let start-1 = omega in
+        let start-2 = omega in
+        let start-3 = omega in
+        let edge-color p = if p then emph-color else weak-color in
+        let omega-1-mid = move-to (between omega1 start-1) (2mm, 0cm) in
+        let omega-2-mid = move-to (between omega2 start-2) (4mm, 0cm) in
+        let lam-below = proj (move-to (south-east-of `V-Glam-lambda`) (0cm, -7.5mm)) base-line in
+        let lam-below-mid = move-to (between lam-below start-3) (7mm, 0cm) in
+        [ spline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
+            [ start-1
+            ; move-to (between  start-1 omega1) (2mm, 0mm)
+            ; omega1
+            ]
+        ; polyline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
+            [ move-to omega1 (-1pt, -6pt); omega1; move-to omega1 (4pt, -2pt)]
+        ; spline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
+            [ start-2
+            ; move-to (between ?:(1. /. 3.) start-2 omega2) (5mm, 0mm)
+            ; move-to (between ?:(2. /. 3.) start-2 omega2) (5mm, 0mm)
+            ; omega2
+            ]
+        ; polyline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
+            [ move-to omega2 (0pt, -4pt); omega2; move-to omega2 (4pt, 0pt)]
+        ; spline?:[lw 1pt; phantom (layer <= 1); pc (edge-color (layer == 2)) ] 
+            [ start-3
+            ; move-to (between ?:(1. /. 4.) start-3 lam-below) (8mm, 0mm)
+            ; move-to (between ?:(3. /. 4.) start-3 lam-below) (8mm, 0mm)
+            ; lam-below              
+            ]
+        ; polyline?:[phantom (layer <= 1); lw 1pt; pc (edge-color (layer == 2)) ] 
+            [ move-to lam-below (0pt, -4pt); lam-below; move-to lam-below (4pt, 0pt)]
+        ]
+      ; concat-map draw-universe default-universes
+      ]
+
+  let diagram = make default-universes default-ordinals
+end
