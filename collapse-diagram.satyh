@@ -144,7 +144,7 @@ end = struct
                   (fun i dest -> (
                     let self = match dest with
                           | Concrete oname -> east-of oname
-                          | Below oname -> south-west-of ?:(2mm) oname
+                          | Below oname -> move-to (south-west-of oname) (-2pt, -5mm)
                     in let omega =
                       between ?:(float i /. float (num-colls - 1)) 
                         (move-to (north-east-of omega-name) (0pt, -2pt))
