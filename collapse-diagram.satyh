@@ -145,7 +145,8 @@ end = struct
                     let self = match dest with
                           | Concrete oname -> east-of oname
                           | Below oname -> move-to (south-west-of oname) (-2pt, -5mm)
-                    in let omega =
+                    in let self-inner = move-to self (3pt, 0pt) in
+                    let omega =
                       between ?:(float i /. float (num-colls - 1)) 
                         (move-to (north-east-of omega-name) (0pt, -2pt))
                         (move-to (south-east-of omega-name) (0pt,  2pt))
@@ -157,7 +158,9 @@ end = struct
                         [omega; rd; ru; self]
                     ; polyline?:[pc emph-color; lw 1pt]
                         [move-to self (4pt, -4pt); self; move-to self (4pt, 4pt)]
-                      ]
+                    ; polyline?:[pc emph-color; lw 1pt]
+                        [move-to self-inner (4pt, -4pt); self-inner; move-to self-inner (4pt, 4pt)]
+                    ]
                   ))
                   coll-targs
               ]
