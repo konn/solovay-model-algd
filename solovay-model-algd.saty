@@ -863,6 +863,46 @@ in document '<
       >
     >
 
+    +frame{Levy崩壊のイメージ}<
+      +centering(
+        open List in open TikZyFi in 
+        let ordinal name x y n = 
+          let y = 1cm *' y in
+              [ node-at ?:[named name] (coord (x +' 7mm, y -' 4pt)) {\small{${#n}}}
+              ; polyline (map coord [(x -' 5pt, y); (x +' 5pt, y)])
+              ] 
+        in {
+        \tikzy?:( default )
+        (concat 
+          [ concat-map
+            (fun (i, name, x, v) -> (
+              let x = 1cm *' x in
+              let ordinal n = ordinal (name ^ `-` ^ n) x in
+              let on = name ^ `-On` in
+              concat 
+                [ [ node-at ?:[named on]    (coord (x, 10cm)) {${\On}}
+                  ; node-at ?:[named name]  (coord (x, 0cm)) v
+                  ; arrow (north-of name) (south-of on)
+                  ]
+                ; ordinal `omega` 1.5 ${\omega}
+                ; ordinal `omega1V` 2.5 ${\omega_1^V}
+                ; ordinal `omega2V` 3.5 ${\omega_2^V}
+                ; [node-at (coord (x +' 6mm, 4.25cm)) {${\vdots}}]
+                ; ordinal `lambda` 6.0 ${\lambda}
+                ; if i == 1 then [] else []
+                ; ordinal `kappa` 8.5 (if i == 2 then ${\kappa} else ${\kappa})
+                ]
+            ))
+            [ (0, `V`, -5., {${V}})
+            ; (1, `V-Glam`, 0., {${V[G \restr \lambda]}})
+            ; (2, `V-G`, 5., {${V[G]}})
+            ]
+          ; [node-at (east-of `V-G-kappa`) {\small{${= \omega_1^{V[G]}}}}]
+          ]
+        );
+      });
+    >
+
     +frame-nofooter{到達不能基数}<
       +defn<
         +itemize<
@@ -872,7 +912,7 @@ in document '<
             +item{例：${\alef, \alef_1, \ldots, \alef_{\alpha + 1}}は正則基数。${\alef_\omega, \alef_{\omega_1}}などは特異基数。}<>
           >
           +item{${\kappa}が\emph{強極限基数}${\defs \forall \lambda < \kappa \mhquad 2^\lambda < \kappa}}<>
-          +item{${\kappa}が\emph{到達不能基数}${\defs} ${\kappa}は正則かつ強極限基数。}<
+          +item{${\kappa > \omega}が\emph{到達不能基数}${\defs} ${\kappa}は正則かつ強極限基数。}<
             +item{${\kappa}は小さい列で近似できないし、冪について閉じている。到達不能基数の存在はGrothendieck宇宙の存在と同値。}<>
           >
         >
@@ -911,10 +951,10 @@ in document '<
         +itemize?:(dot-arabic)<
           +item{${V}の基数${\omega < \lambda < \kappa}は、${V[G]}では可算順序数となり基数ではない。}<>
           +item{${\coll{\kappa}}-強制拡大で成り立つ命題は、${G}の取り方に依存せず、${V}で完全に計算できる。}<>
+          +item{${\kappa}は${V[G]}においても基数のままで、${\kappa = \omega_1^{V[G]}}。}<>
         >
         +p{以下、更に${\kappa}が到達不能基数とする。}
-        +itemize?:(enum-format (dot (fun i -> to-arabic (i + 2))))<
-          +item{${\kappa}は${V[G]}においても基数のままで、${\kappa = \omega_1^{V[G]}}。}<>
+        +itemize?:(enum-format (dot (fun i -> to-arabic (i + 3))))<
           +item{${V[G]}の可算列${f \in \seq{\omega}{V[G]}}に対し、正則基数${\lambda < \kappa}があり${f \in V[G \restr \lambda]}。即ち${V[G]}の可算列は途中の${\lambda < \kappa}まで潰す段階で付加されている。}<>
           +item{任意の${\lambda < \kappa}について、${\kappa}は${V[G \restr \lambda]}でも到達不能基数である。}<>
           +item{${x \in V[G]}が${V[G \restr \lambda]}上ランダムなら、${V[G]}は${V[G \restr \lambda][x]}の${\coll{\kappa}}-強制拡大になる。}<>
