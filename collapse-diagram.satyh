@@ -78,22 +78,7 @@ end = struct
     | _ -> None
 
   let make univs ords layer =
-    let ordinal name i x y n = 
-      let y = 1cm *' y in
-          concat 
-          [ if Option.map-or false (fun i -> i > 0) i
-            then 
-              let i = Option.from 0 i in
-              let start = 2 * (i - 1) + 2 in
-              [ node-at ?:[tc emph-color; named name; phantom (layer > start)] (coord (x +' 7mm, y -' 4pt)) 
-                  {\small{${#n}}}
-              ; node-at ?:[tc weak-color; phantom (layer < start)] (coord (x +' 7mm, y -' 4pt)) 
-                  {\small{${#n}}}
-              ]
-            else [node-at ?:[named name] (coord (x +' 7mm, y -' 4pt)) {\small{${#n}}}]
-          ; [polyline (map coord [(x -' 5pt, y); (x +' 5pt, y)])]
-          ] 
-    in concat 
+    concat 
       [ concat-mapi
           (fun i (Universe (univ-name, _, x))-> 
             concat-map (fun  (Ordinal (ord-name, ord, y, presense)) -> (
