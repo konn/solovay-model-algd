@@ -370,9 +370,10 @@ in document '<
       +itemize<
         +item{典型的な非可測集合\emph{Vitali集合}の「構成」は次のようだった：}<
           +from(2)<+item?:(dot-arabic){\emph{選択公理}：${[0, 1] / \Q}の完全代表系${X}を取って……}<>>
-          +from(3)<+item?:(dot-arabic){\emph{平行移動不変性}：可測なら測度零となる筈の${X}を平行移動して……}<>>
+          +from(3)<+item?:(dot-arabic){\emph{平行移動不変性}：可測なら測度零となる筈の${X}を平行移動して……}<
+            +item{\small{\inactive{alg-d ch.の「${X}が零だと矛盾→測度正→無限和が有限になり矛盾」とは経路が違うだけで同じ事}}}<>
+          >>
           +from(4)<+item?:(dot-arabic){\emph{可算加法性}：可算個の${X}で${\R}が覆えて${\mu(\R) = 0}となり矛盾！}<>>
-          +from(4)<+item{\small{\inactive?:(0.4){（他の非可測集合の例は alg_d の動画がいっぱいあるね）}}}<>>
          >
         +from(5)<
           +item{どれかを諦めれば「全ての実数の集合をLebesgue可測」にできるのでは？}<

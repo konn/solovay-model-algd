@@ -85,8 +85,8 @@ end = struct
     concat 
       [ concat-mapi
           (fun i (Universe (univ-name, _, x))->
-            
-            ( let coll-targs = 
+            ( let is-phantom = layer >= 2 * (i - 1) + 2 in
+              let coll-targs = 
                     map-maybe 
                       (fun (Ordinal (oname, _, _, p)) -> 
                         Option.or
