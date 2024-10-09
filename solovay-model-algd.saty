@@ -731,7 +731,7 @@ in document '<
       >
       +itemize<
         +item{直観：${\coll{\kappa}}は${\omega}と${\kappa}の間の全ての順序数に、${\omega}からの全射を足して可算にしちゃう}<>
-        +item{特に、${\kappa}が\emph{到達不能基数}のとき、${\coll{\kappa}}-強制拡大をした宇宙では${\kappa}は${\omega_1}になっている}<>
+        +item{特に、${\kappa}が\emph{正則}のとき、${\coll{\kappa}}-強制拡大をした宇宙では${\kappa}は${\omega_1}になっている}<>
       >
     >
 
