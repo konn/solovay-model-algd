@@ -1,3 +1,4 @@
+@require: latexcmds/latexcmds
 @require: class-slydifi/theme/arctic
 @require: class-slydifi/slydifi
 @require: ruby/ruby
@@ -11,7 +12,6 @@
 @require: arrows/commands
 @require: fss/fss
 @require: fss/fonts
-@require: latexcmds/latexcmds
 @require: fss/style
 @require: base/list-ext
 @require: enumitem/enumitem
@@ -49,7 +49,9 @@ let enum-format enumeratef =
 let-block +from n blk =  '< +phantom(from n)<#blk;> >
 
 let-mutable theorem-number <- 0
-let-inline \url url = { \href(url){\code(url);} }
+let-inline ctx \url url = 
+  read-inline (ctx |> set-font Latin (`system:JetBrainsMono-Medium`, .8, 0.)) 
+  { \href(url)({\uline(embed-string url);}); }
 let-inline ctx \thmref key = 
   match get-cross-reference key with
     | Some(label) -> read-inline ctx (embed-string label)
@@ -338,10 +340,10 @@ in document '<
   +set-config(slydifi-cfg);
   +make-title(|
     title = {|全ての実数の集合をLebesgue可測にする|〜Solovayモデル入門〜|};
-    author = {|\@mr_konn|Slides are available at \url(`https://bit.ly/solovay-d`);|};
+    author = {|\@mr_konn|};
     date = {
-      |2024-0xAC
-      |alg-dチャンネル
+      |2024-0xAC \@ alg-dチャンネル
+      |Slides are available at \url(`https://bit.ly/solovay-d`);
       |};
   |);
   
