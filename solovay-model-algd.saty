@@ -49,7 +49,7 @@ let enum-format enumeratef =
 let-block +from n blk =  '< +phantom(from n)<#blk;> >
 
 let-mutable theorem-number <- 0
-
+let-inline \url url = { \href(url){\code(url);} }
 let-inline ctx \thmref key = 
   match get-cross-reference key with
     | Some(label) -> read-inline ctx (embed-string label)
@@ -338,7 +338,7 @@ in document '<
   +set-config(slydifi-cfg);
   +make-title(|
     title = {|全ての実数の集合をLebesgue可測にする|〜Solovayモデル入門〜|};
-    author = {|\@mr_konn|};
+    author = {|\@mr_konn|Slides are available at \url(`https://bit.ly/solovay-d`);|};
     date = {
       |2024-0xAC
       |alg-dチャンネル
