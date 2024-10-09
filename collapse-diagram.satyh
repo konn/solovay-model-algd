@@ -85,7 +85,7 @@ end = struct
     concat 
       [ concat-mapi
           (fun i (Universe (univ-name, _, x))->
-            ( let is-phantom = layer >= 2 * (i - 1) + 2 in
+            ( let is-phantom = layer < 2 * (i - 1) + 2 in
               let coll-targs = 
                     map-maybe 
                       (fun (Ordinal (oname, _, _, p)) -> 
@@ -115,7 +115,7 @@ end = struct
                     then Color.black
                     else emph-color
                   in 
-                  let is-phantom = Option.map-or false (fun l -> i >= l && layer >= 2 * l + 1) (destroy-level presense)  in
+                  let is-phantom = is-phantom || Option.map-or false (fun l -> i >= l && layer >= 2 * l + 1) (destroy-level presense)  in
                   let is-omega-1 = 
                       not is-phantom &&
                       Option.map-or true 
@@ -166,7 +166,12 @@ end = struct
               ]
         ))
         univs
-      ; concat-map draw-universe default-universes
+      ; concat-mapi
+        (fun i univ -> (
+          if layer >= 2 * (i - 1) + 2
+            then draw-universe univ
+            else []
+        )) default-universes
       ]
 
   let diagram = make default-universes default-ordinals
