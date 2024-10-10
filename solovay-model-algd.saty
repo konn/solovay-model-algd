@@ -737,16 +737,6 @@ in document '<
       >
     >
 
-    +frame?:(7){Levy崩壊のイメージ}<
-      +centering(
-        open List in open TikZyFi in 
-        let layer = SlydifiParam.get layer in
-        {
-        \tikzy?:( default )
-        (Collapse.diagram layer);
-      });
-    >
-
     +frame-nofooter{到達不能基数}<
       +defn<
         +itemize<
@@ -761,6 +751,17 @@ in document '<
           >
         >
       >
+    >
+
+    +frame-nofooter?:(7){Levy崩壊のイメージ}<
+      +centering{\small{\emph{${\star}} ${\kappa}：到達不能、${\lambda < \kappa}：正則とする}}
+      +centering(
+        open List in open TikZyFi in 
+        let layer = SlydifiParam.get layer in
+        {
+          \tikzy?:( default )
+          (Collapse.diagram layer);
+        });
     >
 
     +frame-nofooter{到達不能基数と巨大基数}<
