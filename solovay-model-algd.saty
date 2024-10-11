@@ -343,7 +343,7 @@ in document '<
     author = {|\@mr_konn|};
     date = {
       |2024-0xAC \@ alg-dチャンネル
-      |Slides are available at \url(`https://bit.ly/solovay-d`);
+      |Slides are available at \url(`https://bit.ly/solovayd`);
       |};
   |);
   
