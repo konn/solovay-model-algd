@@ -53,7 +53,7 @@ let enum-format enumeratef =
   in
   EnumitemFormat.new-ordered labelf
 
-let theorems = SlydifiParam.make Map.empty
+let-mutable theorems <- Map.empty
 
 let-mutable theorem-number <- 0
 let-inline ctx \url url = 
@@ -71,17 +71,17 @@ let-inline ctx \eqref key =
     | None -> read-inline ctx { (??) }
 
 let make-theorem ctx header tag ?:title ?:opts blk =
-  let ths = SlydifiParam.get theorems in
+  let ths = !theorems in
   let (num, to-register) = 
       match  Map.of- String.eq tag ths with
       | Some(num) -> (num, false)
       | None ->
           let () = theorem-number <- !theorem-number + 1 in
           let num = !theorem-number in
-          let () = SlydifiParam.set (Map.bind tag num ths) theorems in
+          let () = theorems <- Map.bind tag num ths in
           (num, true)
   in
-  let txt-header = header ^ arabic !theorem-number in
+  let txt-header = header ^ arabic num in
   let () =
         if to-register 
         then register-cross-reference tag txt-header
@@ -674,52 +674,52 @@ in document '<
       >
     >
 
-    +frame{Solovay集合ならLebesgue可測になる！}<
+    +frame?:(4){Solovay集合ならLebesgue可測になる！}<
       +itemize<
         +item{前の二つの補題を合わせれば……}<>
       >
-      +cor(`lem:solovay-lm`)?*<
+      +phantom(from 2)<+cor(`lem:solovay-lm`)?*<
         +p{${M}を${(2^{ℵ_0})^M < ℵ_1}を満たす内部モデルとする。${A \subseteq \R}が${M}上Solovayなら、${A}はLebesgue可測である。}
-      >
-      +proof<
+      >>
+      +phantom(from 3)<+proof<
         +p{\thmref(`lem:solovay`);より、Borel集合${B}があって、${A}はランダム実数上${B}と一致する。\thmref(`lem:ae-random`);より実数は至るところ${M}上ランダムなので、${A \symdiff B \in \null}を得る。}
-      >
+      >>
       +itemize<
-        +item{あとは「各々そういう${M}上でSolovayな実数の集合」だけを持つようなモデルが取れればよい！}<>
+        +pitem(from 4){あとは「各々そういう${M}上でSolovayな実数の集合」だけを持つようなモデルが取れればよい！}<>
       >
     >
 
-    +frame{構成要件}<
+    +frame?:(5){構成要件}<
       +itemize?:(dot-arabic)<
         +item{どんな実数の集合も、それぞれ${(2^{ℵ_0})^M < ℵ_1}を満たすような内部モデル${M}が取れて${M}上Solovayになるような宇宙が欲しい}<>
-        +item{${\ZFC}のモデル${V}から始めるので、これは${V}の強制法拡大${V[G]}そのものではなく、その内部モデル${M \subseteq V[G]}である必要がある}<>
-        +item{しかも、Solovay性は${V[G]}の方で判断し、したがって可測性も${V[G]}で見たものになる。なので、\emph{${M}における${\R}やBorel集合の全体${\Borels}は${V[G]}のものと一致している}必要がある}<
-          +item?:(listing-itemfmt){Borel集合の全体は連続体濃度個なので、${\R}が${M}と${V[G]}で一致していればよい}<>
+        +pitem(from 2){${\ZFC}のモデル${V}から始めるので、これは${V}の強制法拡大${V[G]}そのものではなく、その内部モデル${M \subseteq V[G]}である必要がある}<>
+        +pitem(from 3){しかも、Solovay性は${V[G]}の方で判断し、したがって可測性も${V[G]}で見たものになる。なので、\emph{${M}における${\R}やBorel集合の全体${\Borels}は${V[G]}のものと一致している}必要がある}<
+          +pitem(from 4)?:(listing-itemfmt){Borel集合の全体は連続体濃度個なので、${\R}が${M}と${V[G]}で一致していればよい}<>
         >
-        +item?:(text-label {\emph{${⤳}}}){(2), (3)を満たすのに良さそうな内部モデルが${\HOD^\omega}}<>
+        +pitem(from 5)?:(text-label {\emph{${⤳}}}){(2), (3)を満たすのに良さそうな内部モデルが${\HOD^\omega}}<>
       >
     >
 
-    +frame{遺伝的に順序数の${\omega}-列で定義可能なクラス${\HOD^\omega}}<
-      +defn(`defn:hod`)<
+    +frame?:(4){遺伝的に順序数の${\omega}-列で定義可能なクラス${\HOD^\omega}}<
+      +defn(`defn:hod`)?:({遺伝的に順序数の${\omega}-列で定義可能な宇宙${\HOD^\omega}})<
         +itemize<
-          +item{集合${A}が\emph{順序数の${\omega}-列で定義可能}（記号：${A \in \OD^\omega}）${\defs}論理式${\varphi(x, s)}と順序数の可算列${z \in \seq{\omega}{\On}}があって、${A = \Set{x}{\varphi(x, z)}}}<>
-          +item{集合${A}が\emph{遺伝的に順序数の${\omega}-列で定義可能}（記号：${A \in \HOD^\omega}）${\defs} ${A}は自身や元、元の元……を含め${\OD^\omega}な集合だけでできている}<>
+          +pitem(from 2){集合${A}が\emph{順序数の${\omega}-列で定義可能}（記号：${A \in \OD^\omega}）${\defs}論理式${\varphi(x, s)}と順序数の可算列${z \in \seq{\omega}{\On}}があって、${A = \Set{x}{\varphi(x, z)}}}<>
+          +pitem(from 3){集合${A}が\emph{遺伝的に順序数の${\omega}-列で定義可能}（記号：${A \in \HOD^\omega}）${\defs} ${A}は自身や元、元の元……を含め${\OD^\omega}な集合だけでできている}<>
         >
       >
       +itemize<
-        +item{Solovay性はランダム実数\inactive{（実は任意のジェネリック実数）}についての定義式が取れるという話だったので、結構${\HOD^\omega}性は近そうに見える}<>
+        +pitem(from 4){Solovay性はランダム実数\inactive{（実は任意のジェネリック実数）}についての定義式が取れるという話だったので、結構${\HOD^\omega}性は近そうに見える}<>
       >
     >
-    +frame{${\HOD^\omega}の性質}<
+    +frame?:(3){${\HOD^\omega}の性質}<
       +p{${\HOD^\omega}の構成は既にあるものを集めてくるという形をとっているので、どのモデル内で${\HOD^\omega}を取っているのかによって内容がかわってくる}
-      +fact(`fact:hod-zf-dc`)<
+      +phantom(from 2)<+fact(`fact:hod-zf-dc`)<
         +p{${M}を${\ZF + \DC}のモデルとするとき、${M}で見た${\HOD^\omega}は${\ZF + \DC}の内部モデルとなる}
-      >
-      +rem(`rem:hod-has-same-reals`)<
+      >>
+      +phantom(from 3)<+rem(`rem:hod-has-same-reals`)<
         +p{実数は${\set{0,1}}の可算列で表現出来るので、${(\HOD^\omega)^{V[G]}}の実数と${V[G]}の実数は一致する。
         特に${(\HOD^\omega)^{V[G]}}に属する実数の集合については、${V[G]}でみても${(\HOD^\omega)^{V[G]}}でみても可測性は一致する！}
-      >
+      >>
     >
     +frame{よい強制法の選択：Levy崩壊${\coll{\kappa}}}<
       +p{あとは良い強制法を選んで${V[G]}を取り、そこでの${\HOD^\omega}に属す実数の集合が以下を満たすようになっていればよい：}
