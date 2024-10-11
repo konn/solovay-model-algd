@@ -721,33 +721,31 @@ in document '<
         特に${(\HOD^\omega)^{V[G]}}に属する実数の集合については、${V[G]}でみても${(\HOD^\omega)^{V[G]}}でみても可測性は一致する！}
       >>
     >
-    +frame{よい強制法の選択：Levy崩壊${\coll{\kappa}}}<
-      +p{あとは良い強制法を選んで${V[G]}を取り、そこでの${\HOD^\omega}に属す実数の集合が以下を満たすようになっていればよい：}
+  
+    +frame?:(4){よい強制法の選択：Levy崩壊${\coll{\kappa}}}<
       +itemize<
-        +item{${\HOD^\omega}に属する実数の集合${A}が何らかの（${A}によって異っていてもよい）${M}上でSolovayになる}<>
-        +item{そんな${M}は${V[G]}でみると${(2^{ℵ_0})^M < ℵ_1^{V[G]}}を満たしている}<>
+        +item{あとは良い強制拡大${V[G]}を取り、${V[G]}の${\HOD^\omega}に属す実数の集合が以下を満たしていればよい：}<
+          +pitem(from 2)?:(paren-arabic){${\HOD^\omega}に属する実数の集合${A}が何らかの（${A}によって異っていてもよい）${M}上でSolovayになる}<>
+          +pitem(from 3)?:(paren-arabic){そんな${M}は${V[G]}でみると${(2^{ℵ_0})^M < ℵ_1^{V[G]}}を満たしている}<>
+        >
+        +pitem(from 4){結論から言うと、\emph{到達不能基数${\kappa}を${\omega_1}に潰すLevy崩壊${\coll{\kappa}}}がちょうどこれに最適！}<>
       >
-      +p{結論から言うと、\emph{到達不能基数${\kappa}を${\omega_1}に潰すLevy崩壊${\coll{\kappa}}}がちょうどこれに最適！}
     >
   >
 
   +section{|Levy崩壊と到達不能基数|}<
-    +frame{Levy崩壊}<
-      +defn(`defn:collapse`)<
-        +p{${\kappa}を正則基数とする。\emph{Levy崩壊}${\coll{\kappa}}を次で定める：}
-        +align?:(AZMathEquation.notag)(${
-        | \coll{\kappa}
-        | \defeq \prod_{\omega < \alpha < \kappa}^{<\alef_0} \seq{<\omega}{\alpha} 
-        |
-        | \defeq \Set{f}{ f: \text!{関数}, \pabs{f} < \alef_0, \dom(f) \subset \omega, \ran(f) \subset \alpha < \kappa}
-        |});
-      >
-      +itemize<
-        +item{直観：${\coll{\kappa}}は${\omega}と${\kappa}の間の全ての順序数に、${\omega}からの全射を足して可算にしちゃう}<>
-        +item{特に、${\kappa}が\emph{正則}のとき、${\coll{\kappa}}-強制拡大をした宇宙では${\kappa}は${\omega_1}になっている}<>
-      >
+    +frame-nofooter{}<
+      +vspace(1cm);
+      +centering{\fontsize(60pt){Q:}}
+      +centering{\fontsize(80pt){\emph{到達不能基数}}}
+      +centering{\fontsize(60pt){とは？}}
     >
-
+    +frame-nofooter{}<
+      +vspace(1cm);
+      +centering{\fontsize(60pt){A1:}}
+      +centering{\fontsize(40pt){短い列で \hquad;}\fontsize(80pt){\emph{近似不能}}\fontsize(40pt){\hquad;で}}
+      +centering{\fontsize(80pt){\emph{冪で閉じた}}\fontsize(40pt){基数}}
+    >
     +frame-nofooter{到達不能基数}<
       +defn(`def:inacc`)<
         +itemize<
@@ -764,6 +762,57 @@ in document '<
       >
     >
 
+    +frame-nofooter{}<
+      +centering{\fontsize(40pt){A2:}}
+      +centering{\fontsize(80pt){\emph{Grothendieck宇宙}}}
+      +centering{\fontsize(40pt){または}}
+      +centering{\fontsize(70pt){\emph{${\ZFC}無矛盾性が出る}}}
+      +centering{\fontsize(40pt){くらい巨大な基数}}
+    >
+
+    +frame-nofooter?:(10){到達不能基数と巨大基数}<
+      +fig-on-right(
+        vconcat [include-image 6.5cm `./imgs/alg-d-contra.jpg`
+          ; textbox {\small{\small{\href(`https://youtu.be/z7jXyjFnjfU?si=wHQ11E-qSyJIbonI`){※プライバシー保護の以下略}}}}]
+      )<
+        +itemize<
+          +item{到達不能基数は、\emph{巨大基数}と呼ばれるものの一種}<
+            +pitem(from 2){\emph{巨大基数}：${\ZFC}の無矛盾性を導くほど大きい基数}<>
+            +pitem(from 3){今回の${\LM}のような命題の強さを測る物差し}<>
+          >
+        >
+      >
+      +itemize<
+        +pitem(from 4){${\kappa}を到達不能とすると、${V_\kappa}が${\ZFC}のモデルになる}<
+            +pitem(from 5){しかも\emph{順序数}${\alpha < \kappa}で${V_\alpha}が${\ZFC}のモデルになる物が非有界に存在する}<>
+          >
+          +pitem(from 6){到達不能基数はまだ弱く、「\emph{小さな}巨大基数」と呼ばれる物の代表例}<
+            +pitem(from 7){「\emph{大きな}巨大基数」は真偽を保つ${V}の中への同型${V \prec M \subseteq V}で定義される}<>
+          >
+          +pitem(from 8){最強巨大基数公理：${0 = 1}。\emph{${\AC}の下で}Reinhardt基数${V \prec V}の存在と同値}<
+            +pitem(from 9){${0 = 1}自身は単なる矛盾なので単に「巨大基数」と呼ぶと厳密には怒られる}<>
+            +pitem(from 10){\emph{${\AC}がない状態で}Reinhardt基数が矛盾するかは\emph{未解決問題}}<>
+          >
+      >
+    >
+
+
+    +frame?:(3){Levy崩壊}<
+      +defn(`defn:collapse`)<
+        +p{${\kappa}を正則基数とする。\emph{Levy崩壊}${\coll{\kappa}}を次で定める：}
+        +align?:(AZMathEquation.notag)(${
+        | \coll{\kappa}
+        | \defeq \prod_{\omega < \alpha < \kappa}^{<\alef_0} \seq{<\omega}{\alpha} 
+        |
+        | \defeq \Set{f}{ f: \text!{関数}, \pabs{f} < \alef_0, \dom(f) \subset \omega, \ran(f) \subset \alpha < \kappa}
+        |});
+      >
+      +itemize<
+        +pitem(from 2){直観：${\coll{\kappa}}は${\omega}と${\kappa}の間の全ての順序数に、${\omega}からの全射を足して可算にしちゃう}<>
+        +pitem(from 3){特に、${\kappa}が\emph{正則}のとき、${\coll{\kappa}}-強制拡大をした宇宙では${\kappa}は${\omega_1}になっている}<>
+      >
+    >
+
     +frame-nofooter?:(7){Levy崩壊のイメージ}<
       +centering{\small{\emph{${\star}} ${\kappa}：到達不能、${\lambda < \kappa}：正則とする}}
       +centering(
@@ -773,32 +822,6 @@ in document '<
           \tikzy?:( default )
           (Collapse.diagram layer);
         });
-    >
-
-    +frame-nofooter{到達不能基数と巨大基数}<
-      +fig-on-right(
-        vconcat [include-image 6.5cm `./imgs/alg-d-contra.jpg`
-          ; textbox {\small{\small{\href(`https://youtu.be/z7jXyjFnjfU?si=wHQ11E-qSyJIbonI`){※プライバシー保護の以下略}}}}]
-      )<
-        +itemize<
-          +item{到達不能基数は、\emph{巨大基数}と呼ばれるものの一種}<
-            +item{\emph{巨大基数}：${\ZFC}の無矛盾性を導くほど大きい基数}<>
-            +item{今回の${\LM}のような命題の強さを測る物差し}<>
-          >
-        >
-      >
-      +itemize<
-        +item{${\kappa}を到達不能とすると、${V_\kappa}が${\ZFC}のモデルになる}<
-            +item{しかも${\kappa}未満の順序数で${\ZFC}のモデルになるような${V_\alpha}が非有界に存在する}<>
-          >
-          +item{到達不能基数はまだ弱く、「小さな巨大基数」と呼ばれる物の代表例}<
-            +item{「大きな巨大基数」は真偽を保つ${V}の中への同型${V \prec M \subseteq V}で定義される}<>
-          >
-          +item{最強巨大基数公理：${0 = 1}。${\AC}の下でReinhardt基数${V \prec V}の存在と同値}<
-            +item{${0 = 1}自身は単なる矛盾なので単に「巨大基数」と呼ぶと厳密には怒られる}<>
-            +item{${\AC}がない状態でReinhardt基数が矛盾するかは未解決問題}<>
-          >
-      >
     >
 
     +frame-nofooter{Levy崩壊の基本性質}<
@@ -825,103 +848,110 @@ in document '<
       
     +frame-nofooter{}<
       +vspace(0.5cm);
-      +centering{\fontsize(80pt){任意の実数の集合}}
-      +centering{\fontsize(80pt){${A \in  (\HOD^\omega)^{V[G]}}}}
-      +centering{\fontsize(80pt){に対し}}
+      +centering{\fontsize(60pt){任意の\emph{実数の集合}}}
+      +centering{\fontsize(80pt){${A \in  \math-color!(emph-color){(\HOD^\omega)^{V[G]}}}}}
+      +centering{\fontsize(60pt){に対し}}
     >
 
     +frame-nofooter{}<
       +vspace(0.5cm);
-      +centering{\fontsize(90pt){${V[G]}の}}
-      +centering{\fontsize(90pt){内部モデル${M}}}
-      +centering{\fontsize(90pt){で}}
+      +centering{\fontsize(90pt){\emph{${V[G]}の}}}
+      +centering{\fontsize(90pt){内部モデル\emph{${M}}}}
+      +centering{\fontsize(80pt){で}}
     >
 
     +frame-nofooter{}<
-      +centering{\fontsize(70pt){${(2^{\alef_0})^M < \alef_1^{V[G]}}}}
+      +centering{\fontsize(70pt){\emph{${(2^{\alef_0})^M < \alef_1^{V[G]}}}}}
       +centering{\fontsize(50pt){かつ}}
-      +centering{\fontsize(70pt){${A}: ${M}上Solovay}}
+      +centering{\fontsize(70pt){\emph{${A}: ${M}上Solovay}}}
       +centering{\fontsize(50pt){となるものを探す！}}
     >
 
-    +frame{Levy崩壊後の${\HOD^\omega}に属す実数の集合はSolovay}<
+    +frame?:(7){Levy崩壊後の${\HOD^\omega}に属す実数の集合はSolovay}<
         +itemize<
           +item{以下、${\kappa}を到達不能基数、${V[G]}を${\coll{\kappa}}-強制拡大とする。}<>
-          +item{\thmref(`lem:levy-props`);を認めると、\emph{${(\HOD^\omega)^{V[G]}}に属する任意の実数の集合${A}が、\thmref(`lem:solovay-lm`);の前提を満たすような${M}上でSolovay}になることが言える！}<
-            +item?:(dot-arabic){${\HOD^\omega}の定義より${\sigma \in \seq{\omega}{\On} \cap V[G]}が取れ${A = \Set{x \in \R}{\varphi(x, \sigma)}}。}<>
-            +item?:(dot-arabic){\thmref(`lem:levy-props`); (4)より、正則基数${\lambda < \kappa}が取れて${\sigma \in V[G \restr \lambda]}となる。}<>
-            +item?:(dot-arabic){(3)(5)より${M \defeq V[G\restr \lambda]}で${\kappa}は到達不能なので${(2^{\alef_0})^{V[G \restr \lambda]} < \kappa = \alef_1^{V[G]}}。}<>
-            +item?:(dot-arabic){(2)(6)より${M}-ランダム実数${x}に対し${x \in A}は「任意の${\coll{\kappa}}-強制拡大で${\varphi(x, \sigma)}が成り立つ」という${M[x]}内の論理式で判定できる。}<>
-            +item?:(dot-arabic){以上より${A}は${M = V[G \restr \lambda]}上Solovayで${(2^{\alef_0})^M < \alef_1}！}<>
+          +pitem(from 2){\thmref(`lem:levy-props`);を認めると、\emph{${(\HOD^\omega)^{V[G]}}に属する任意の実数の集合${A}が、\thmref(`lem:solovay-lm`);の前提を満たすような${M}上でSolovay}になることが言える！}<
+            +pitem(from 3)?:(dot-arabic){${\HOD^\omega}の定義より${\sigma \in \seq{\omega}{\On} \cap V[G]}が取れ${A = \Set{x \in \R}{\varphi(x, \sigma)}}。}<>
+            +pitem(from 4)?:(dot-arabic){\thmref(`lem:levy-props`); (4)より、正則基数${\lambda < \kappa}が取れて${\sigma \in V[G \restr \lambda]}となる。}<>
+            +pitem(from 5)?:(dot-arabic){(3)(5)より${M \defeq V[G\restr \lambda]}で${\kappa}は到達不能なので${(2^{\alef_0})^{V[G \restr \lambda]} < \kappa = \alef_1^{V[G]}}。}<>
+            +pitem(from 6)?:(dot-arabic){(2)(6)より${M}-ランダム実数${x}に対し${x \in A}は「任意の${\coll{\kappa}}-強制拡大で${\varphi(x, \sigma)}が成り立つ」という${M[x]}内の論理式で判定できる。}<>
+            +pitem(from 7)?:(dot-arabic){以上より${A}は${M = V[G \restr \lambda]}上Solovayで${(2^{\alef_0})^M < \alef_1}！}<>
           >
         >
     >
 
-    +frame-nofooter{まとめ}<
+    +frame-nofooter?:(7){まとめ}<
       +itemize<
         +item{到達不能基数${\kappa}を${\omega_1}に潰した宇宙${V[G]}では、そこの${\HOD^\omega}は${\ZF + \DC}を満たし、${\HOD^\omega}に属する任意の実数の集合はLebesgue可測になる}<
-          +item{可測性の一致：${\HOD^\omega}と${V[G]}は同じ実数を持つことが大事}<>
-          +item{Key: 実数の集合${A}が、連続体濃度が外から見て可算になるような内部モデル${M}に対しSolovayという性質を満たすとLebesgue可測になる}<
-            +item{Solovay集合は${M}-ランダム実数上Borel集合で近似でき、連続体濃度が小さければ、実数は至るところ${M}-ランダムとなるので}<>
+          +pitem(from 2){可測性の一致：${\HOD^\omega}と${V[G]}は\emph{同じ実数を持つ}ことが大事}<>
+          +pitem(from 3){Key: 実数の集合${A}が、\emph{連続体濃度が外から見て可算}になるような内部モデル${M}に対し\emph{Solovay}という性質を満たすと\emph{Lebesgue可測になる}}<
+            +pitem(from 4){Solovay集合は\emph{${M}-ランダム実数上Borel集合で近似}でき、連続体濃度が小さければ、実数は\emph{至るところ${M}-ランダム}となるので}<>
           >
-          +item{${A \in \HOD^\omega}は可算列から定義できて、${\kappa}の到達不能性からそんな可算列は途中の宇宙${M \defeq V[G \restr \lambda]}に既に現れていて、そこで${A}の定義論理式が使える}<
+          +pitem(from 5){${A \in \HOD^\omega}は\emph{可算列から定義}できて、${\kappa}の到達不能性からそんな可算列は\emph{途中の宇宙${M \defeq V[G \restr \lambda]}に既に現れて}いて、そこで${A}の定義論理式が使える}<
           >
-          +item{${\kappa}は途中の段階ではまだ到達不能なので${2^{\alef_0}}が${V[G]}で可算になっている}<
-            +item{この二点に到達不能性の仮定が本質的に効いている}<>
+          +pitem(from 6){${\kappa}は\emph{途中段階ではまだ到達不能}なので${2^{\alef_0}}が${V[G]}で可算になっている}<
+            +pitem(from 7){この二点に\emph{到達不能性の仮定}が本質的に効いている}<>
           >
         >
       >
     >
 
-    +frame-nofooter{結果の一般化}<
+    +frame-nofooter?:(7){結果の一般化}<
       +itemize<
         +item{Borel集合族上の\emph{イデアル}${I}に対し、\emph{${I}-正則性}の概念が定義できる}<
-          +item{Lebesgue可測性＝零集合イデアル${\null}に関する正則性}<>
-          +item{Baireの性質＝痩せ集合イデアル${\meager}に関する正則性}<>
-          +item{\small{etc.}}<>
+          +pitem(from 2){Lebesgue可測性＝零集合イデアル${\null}に関する正則性}<>
+          +pitem(from 3){Baireの性質＝痩せ集合イデアル${\meager}に関する正則性 \small{etc.}}<>
         >
-        +item{議論を一般化してやると、${I}が\emph{${\sigma}-飽和性}や\emph{強い適正性}という性質を満たす場合、\emph{Solovayモデルで任意の実数の集合が${I}-正則性を持つ}（Khomskii\cite[`Khomskii:2012`];）}<
-          +item{\small{\inactive{（Khomskii\cite[`Khomskii:2012`];では単純に${I^+}が適正ならよいとされているが、実はもうちょっと条件が要る）}}}<>
-          +item{実は「任意の実数の集合が\emph{Baireの性質}を持つ（${\BP}）」という命題単体には\emph{到達不能基数は不要}であることが知られている（Shelah\cite[`Shelah:1984`];）}<
-            +item{Shelah\cite[`Shelah:1984`];のモデルは${\CH}も満たす。${\ZF+\DC+\BP+\mtextcolor!(emph-color){\lnot \CH}}の無矛盾性が到達不能基数なしで言えるかは未解決（一度アナウンスされたが取り下げられた）}<>
-          >
+        +pitem(from 4){議論を一般化してやると、${I}が\emph{${\sigma}-飽和性}や\emph{強い適正性}という性質を満たす場合、\emph{Solovayモデルで任意の実数の集合が${I}-正則性を持つ}（Khomskii\cite[`Khomskii:2012`];）}<
+          +pitem(from 5){\small{\inactive{（Khomskii\cite[`Khomskii:2012`];では単純に${I^+}が適正ならよいとされているが、実はもうちょっと条件が要る）}}}<>
+          +pitem(from 6){実は「任意の実数の集合が\emph{Baireの性質}を持つ（${\BP}）」という命題単体には\emph{到達不能基数は不要}であることが知られている（Shelah\cite[`Shelah:1984`];）}<
+            +pitem(from 7){Shelah\cite[`Shelah:1984`];のモデルは${\CH}も満たす。${\ZF+\DC+\BP+\mtextcolor!(emph-color){\lnot \CH}}の無矛盾性が到達不能基数なしで言えるかは未解決（一度アナウンスされたが取り下げられた）}<>
+            >
         >
       >
     >
   >
 
   +section{|急速フィルター：可測性から到達不能基数へ|}<
-    +frame-nofooter{到達不能基数、要るの？}<
-      +itemize<
-        +item{${\ZF+\DC+\LM}のモデルを創るのに、到達不能基数は必要なのか？}<>
-      >
-
+    +frame-nofooter{当然の疑問}<
+      +vskip(1cm);
+      +centering{\fontsize(80pt){Q: 到達不能基数}}
+      +centering{\fontsize(80pt){\emph{本当に}要るの？}}
+    >
+    +frame-nofooter{A.}<
+      +vskip(2cm);
+      +centering{\fontsize(85pt){Shelah「要るで」}}
+    >
+  
+    +frame?:(5){到達不能基数、要るの？}<
       +thm(`thm:shelah`)?:({Shelah\cite[`Shelah:1984`];})<
         +p{${\ZF+\CC+\LM}の下で、任意の実数${z \in R}に対し、${V}の${\omega_1}は${L[z]}から見ると到達不能基数になっている。}
       >
 
       +itemize<
-        +item{${\CC}：可算選択公理。${\AC}を可算直積に制限したもので、${\DC}から従う}<>
-        +item{${L[z]}：実数${z}をパラメータに使って下から定義できる最小の内部モデル。}<>
-        +item{Solovayの定理と合わせて、「${\ZF+\DC+\LM}」と「${\ZFC+\text!{到達不能基数}}」は\emph{無矛盾性の意味で等価}なことがわかった}<
-          +item{\small{このように、命題の強さを巨大基数公理で分類する時は、「巨大基数＋強制法」で命題のモデルをつくり、逆は「命題を仮定し適当な内部モデルでその巨大基数をみつける」という形で示すのが常套手段}}<>
+        +pitem(from 2){${\CC}：可算選択公理。${\AC}を可算直積に制限したもので、${\DC}から従う}<
+          +pitem(from 3){\inactive{\small{実は、${\CC}を仮定から外せば到達不能基数は不要（そのかわり解析学が異常になる）}}}<>
+        >
+        +pitem(from 3){${L[z]}：実数${z}をパラメータに使って下から定義できる最小の内部モデル。}<>
+        +pitem(from 4){Solovayの定理と合わせて、「${\ZFC+\exists \kappa: \text!{到達不能基数}}」「${\ZF+\DC+\LM}」「${\ZF+\CC+\LM}」は\emph{無矛盾性の意味で等価}なことがわかった}<
+          +pitem(from 5){\small{このように、命題の強さを巨大基数公理で分類する時は、「巨大基数＋強制法」で命題のモデルをつくり、逆は「命題を仮定し適当な内部モデルでその巨大基数をみつける」という形で示すのが常套手段}}<>
         >
       >
     >
 
-    +frame-nofooter{実際のShelahの定理}<
+    +frame-nofooter?:(5){実際のShelahの定理}<
       +itemize<
         +item{Shelahが示したのは、より精密には次の定理：}<>
       >
-      +thm(`thm:shelah`)?:({Shelah\cite[`Shelah:1984`];})<
+      +phantom(from 2)<+thm(`thm:shelah`)?:({Shelah\cite[`Shelah:1984`];})<
         +p{${\ZF+\CC}の下で、任意の\emph{${\mathbf{\Sigma^1_3}}-集合}がLebesgue可測なら、${\omega_1}は任意の実数${z}について${L[z]}で到達不能基数になっている\small{（「\emph{${\omega_1}が実数に対して到達不能}」）}。}
-      >
+      >>
       +itemize<
-        +item{${\mathbf{\Sigma}^1_3}-集合：ある${\R^4}のBorel集合${B}について、以下の形で書ける集合：
+        +pitem(from 3){${\mathbf{\Sigma}^1_3}-集合：ある${\R^4}のBorel集合${B}について、以下の形で書ける集合：
           \eqn?:(AZMathEquation.notag)(${\Set{a \in \R}{\exists x \in \R \mhquad \forall y \in \R \mhquad \exists z \in \R \mhquad (a,x,y,z) \in B}});
         }<>
-        +item{つまり、\emph{ある程度の複雑さの論理式で定義できる実数の集合をLebesgue可測にする}のに到達不能基数が必要！}<
-          +item{${\mathbf{\Sigma}^1_3}-可測性は（到達不能基数の存在を認めるなら）、フルの${\AC}とも両立}<>
+        +pitem(from 4){つまり、\emph{ある程度の複雑さの論理式で定義できる実数の集合をLebesgue可測にする}のに到達不能基数が必要！}<
+          +pitem(from 5){${\mathbf{\Sigma}^1_3}-可測性は（到達不能基数の存在を認めるなら）、フルの${\AC}とも両立}<>
         >
       >
     >
@@ -940,16 +970,16 @@ in document '<
       >
     >
 
-    +frame{非可測集合をどう創るか？}<
+    +frame?:(4){非可測集合をどう創るか？}<
       +itemize<
         +item{Shelahの証明はかなり大変。Raisonnier\cite[`Raisonnier:1984`];が同じ号の論文誌（！）で「数学的」な別証明を与えている。主役は\emph{急速フィルター}である：}<>
       >
-      +defn(`defn:rapid`)<
+      +phantom(from 2)<+defn(`defn:rapid`)<
         +p{${\omega}上のフィルター${ℱ}が\emph{急速}${\defs} ${ℱ}は補有限フィルターを含み、任意の単調な${f: \omega \to \omega}に対し、ある${a \in ℱ}があって${\forall n \mhquad \pabs{f(n) \cap a} \leq n}。}
-      >
-      +lem(`lem:mokobodzki`)?:({Mokobodzki})<+p{急速フィルターはLebesgue非可測。}>
+      >>
+      +phantom(from 3)<+lem(`lem:mokobodzki`)?:({Mokobodzki})<+p{急速フィルターはLebesgue非可測。}>>
       +itemize<
-        +item{\small{証明の概略：補有限フィルターを含むフィルターは、可測なら零集合（Sierpinski）。一方、Lebesgue密度定理などを使って急速フィルターの定義条件から不等式評価すると、外測度正となり矛盾。}}<>
+        +pitem(from 4){\small{証明の概略：補有限フィルターを含むフィルターは、可測なら零集合（Sierpinski）。一方、Lebesgue密度定理などを使って急速フィルターの定義条件から不等式評価すると、外測度正となり矛盾。}}<>
       >
     >
 
@@ -973,22 +1003,22 @@ in document '<
       >
     >
 
-    +frame{Shelahの定理・まとめ}<
+    +frame?:(6){Shelahの定理・まとめ}<
       +itemize<
-        +item{Shelah\cite[`Shelah:1984`];は「${\CC}と任意の実数の集合の可測性が成り立つなら、${V}の${\omega_1}は全ての実数${z}に対し${L[z]}で到達不能」を示し、Solovayの「逆」を示した}<
-          +item{可測性には到達不能基数は本質的に必要！}<>
-          +item{実際には、${\mathbf{\Sigma}^1_3}という種類の集合の可測性の時点で、既に到達不能基数が必要}<>
+        +pitem(from 1){Shelah\cite[`Shelah:1984`];は「${\CC}と任意の実数の集合の可測性が成り立つなら、${V}の${\omega_1}は全ての実数${z}に対し${L[z]}で到達不能」を示し、Solovayの「逆」を示した}<
+          +pitem(from 2){可測性には到達不能基数は本質的に必要！}<>
+          +pitem(from 3){実際には、${\mathbf{\Sigma}^1_3}という種類の集合の可測性の時点で、既に到達不能基数が必要}<>
         >
-        +item{Raissonierは、${\mathbf{\Sigma}^1_2}-集合の可測性を仮定した上で、上の状況が破れているとして、${\mathbf{\Sigma}^1_3}な非可測集合を構成する別証明を与えている}<
-          +item{\emph{急速フィルター}の一種であるRaisonnierフィルターがその非可測集合}<>
-          +item{証明はかなりテクい……}<>
+        +pitem(from 4){Raissonierは、${\mathbf{\Sigma}^1_2}-集合の可測性を仮定した上で、上の状況が破れているとして、${\mathbf{\Sigma}^1_3}な非可測集合を構成する別証明を与えている}<
+          +pitem(from 5){\emph{急速フィルター}の一種であるRaisonnierフィルターがその非可測集合}<>
+          +pitem(from 6){証明はかなりテクい……}<>
         >
       >
     >
   >
 
   +section{|オマケ：Solovayモデルでの解析学|}<
-    +frame{Solovayモデルでの解析学1：自動連続性}<
+    +frame?:(2){Solovayモデルでの解析学1：自動連続性}<
       +itemize<
         +item{Solovayモデルはいい集合しかなかったり、${\DC}しか成り立たなかいため、\emph{「普通」とは異なる解析学}が成り立っている。}<>
         +item{以下では、証明はスキップしつつそうした結果を簡単に見ていく。}<
@@ -996,31 +1026,34 @@ in document '<
         >
         +item{次は${\ZF+\DC+\BP}から従う衝撃の結果である：}<>
       >
-      +thm(`thm:auto-conti`)?:({Wright\cite[`Wright:1977`];})<
+      +phantom(from 2)<+thm(`thm:auto-conti`)?:({Wright\cite[`Wright:1977`];})<
         +p{${\ZF+\DC+\BP}を仮定する。${B}をBanach空間、${W}を第二可算ベクトル空間とする。${T: B \to W}が線型写像なら、${T}は連続である。特に、Banach空間から${\R}への線型汎関数は常に連続である。}
-      >
+      >>
     >
 
-    +frame{Solovayモデルでの解析学2：Hahn–Banachの不成立}<
+    +frame?:(3){Solovayモデルでの解析学2：Hahn–Banachの不成立}<
       +itemize<
         +item{一方で、${\BP}や${\LM}のために、成り立たなくなる定理がある。}<>
-        +item{たとえば、次のHahn–Banachの定理は関数解析の基本定理である：}<>
+        +pitem(from 2){たとえば、次のHahn–Banachの定理は関数解析の基本定理である：}<>
       >
-      +thm(`thm:hahn-banach`)?:({Hahn–Banachの定理})<
+      +phantom(from 2)<+thm(`thm:hahn-banach`)?:({Hahn–Banachの定理})<
         +small<+p{${\ZFC}を仮定する。${B}を位相線型空間、${p: B \to \R}を劣線型とする。線型部分空間${B_0 \subseteq B}上の線型汎関数${f: B_0 \to \R}が${B_0}上で${f \leq p}を満たすなら、${f}は${f \leq p}を保ったまま${B}全域に拡張される。}>
-      >
+      >>
       +itemize<
-        +item{しかし、次の補題から\emph{無制限のHahn–BanachはSolovayモデルで不成立}！}<>
+        +pitem(from 3){しかし、次の補題から\emph{無制限のHahn–BanachはSolovayモデルで不成立}！}<>
       >
-      +lem(`lem-hb-refutes-solovay`)?:({Solovay})<+p{${\ZF+\DC}のもとで、${B}を可分ノルム空間に制限したHahn–Banachの定理から、Baireの性質もLebesgue可測性も持たない実数の集合の存在が従う。}>
+      +phantom(from 3)<+lem(`lem-hb-refutes-solovay`)?:({Solovay})<+p{${\ZF+\DC}のもとで、${B}を可分ノルム空間に制限したHahn–Banachの定理から、Baireの性質もLebesgue可測性も持たない実数の集合の存在が従う。}>>
     >
 
     +frame{Solovayモデルでの解析学3：制限されたHahn–Banach}<
       +itemize<
         +itemize<
-        +item{\thmref(`lem-hb-refutes-solovay`);は${\ell^\infty}についてのHahn–Banachから${\omega}上のある種の測度の存在が出、それからLebesgue可測でもBaireでもない集合がつくれることから従う。}<        >
+        +item{\thmref(`lem-hb-refutes-solovay`);の証明の概略：}<
+          +item?:(dot-arabic){${\ell^\infty}についてのHahn–Banachから${\omega}上のある種の測度を構成する}<>
+          +item?:(dot-arabic){それからLebesgue可測でもBaireでもない集合をつくる}<>
+        >
       >
-        +item{空間を${\ell^\infty}を避けるよう限定した\emph{部分的なHahn–Banachが証明できる}：}<>
+        +item{抵触しないよう条件を限定すれば、\emph{部分的なHahn–Banachは証明可能}：}<>
       >
       +lem(`lem:solovay-restrict-hb`)?:({Solovay})<
         +p{${\ZF+\DC+\BP}のもとで、以下の制限されたHahn–Banachが証明可能：}
@@ -1033,12 +1066,12 @@ in document '<
   >
 
 
-  +section{|まとめ|}<
+  +section{|全体のまとめ|}<
     +namedframe(`matome`){\select(from 2){Any Questions?}{まとめ}}<
       +itemize<
         +item{Solovay\cite[`Solovay:1970`];は${\ZF+\DC+\text!{任意の実数の集合が可測}}のモデルを与えた}<
-          +item{\emph{到達不能基数}${\kappa}の存在を仮定し、それを${\omega_1}に潰した宇宙を考え、その中の${\HOD^\omega}を見る、という段階を踏んだ}<>
-          +item{${\HOD^\omega}に属す集合が殆どいたるところ「ランダム」で、ランダム実数上はBorel集合と一致するようにするのに必要}<>
+          +item{\emph{到達不能基数}${\kappa}の存在を仮定し、\emph{それを${\omega_1}に潰した宇宙}を考え、\emph{その中の${\HOD^\omega}を見る}、という段階を踏んだ}<>
+          +item{到達不能基数は、${\HOD^\omega}に属す集合が殆どいたるところ「\emph{ランダム}」で、\emph{ランダム実数上はBorel集合と一致する}ようにするのに必要}<>
           +item{Solovayモデルでは、他にも任意の実数の集合がBaireの性質などイデアルで一般化された正則性を持つ}<>
         >
         +item{Shelah\cite[`Shelah:1984`];は、Baire性には到達不能基数が要らないことを示しつつ、任意といわず\emph{${\mathbf{\Sigma}^1_3}-可測性に本質的に到達不能基数が必要}であることを示した}<>
