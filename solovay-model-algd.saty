@@ -848,7 +848,7 @@ in document '<
     >
 
     +frame-nofooter{}<
-      +vspace(5cm);
+      +vspace(3cm);
       +centering{\fontsize(90pt){目標の復習：}}
       >
       
@@ -1129,7 +1129,7 @@ in document '<
         +item{これは、零集合イデアル${\null}が\emph{${\sigma}-飽和}という性質を満たすため}<
           +item{${\null}が${\sigma}-飽和${\defs}非可算個の測度正のBorel集合の族${\Seq{A_i}{i < \omega_1}}に対し、${i \neq j}で${\mu(A_i \cap A_j) > 0}となるものが存在}<>
           +item{互いに交わりが零となるBorel集合からなる族は高々可算、ということ}<
-            +item{\emph{演習問題}：示せ（\emph{ヒント}：単位区間${[0, 1]}上の確率測度なら簡単。${\R}全域なら${\sigma}-有限性を使って帰着）。}<>
+            +item{\emph{演習問題}：示せ（\emph{ヒント}：単位区間${[0, 1]}上なら、${\mu(A_i) > \frac{1}{n}}となるものを${(n+1)}-個もってくればよい。${\R}全域なら${\sigma}-有限性を使って帰着）。}<>
           >
         >
         +item{今回は議論を簡単にするため（どうせ使うし）仮定した}<>
