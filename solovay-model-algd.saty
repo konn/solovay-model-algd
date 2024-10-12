@@ -520,17 +520,17 @@ in document '<
       >
     >
 
-    +frame-nofooter?:(7){基数について}<
+    +frame-nofooter{基数について}<
       +itemize<
         +item{\emph{基数}：全単射の同型型。選択公理の下では「それ未満の順序数からの全射がない順序数」として定義される。基数は${\kappa, \lambda, \theta, \ldots}などで表す。}<
           +item{\small{\inactive{（この後${\AC}の成り立たないモデルを創るが、そこでの基数を扱うことはないので気にしなくてよい）}}}<>
         >
-        +pitem(from 2){基数の全体は整列されており${\On}と同型になる。そこで、\emph{無限基数}を小さい順に${\alef_0, \alef_1, \ldots, \alef_{\omega}, \alef_{\omega + 1}, \ldots}または${\omega_0, \omega_1, \ldots, \omega_{\omega}, \omega_{\omega + 1}, \ldots}と書く。}<>
-        +pitem(from 3){基数${\kappa}より大きな最小の基数を${\kappa^+}で表し、${\kappa}の\emph{後続基数}と呼ぶ。}<>
-        +pitem(from 4){${\kappa = \alef_{\alpha + 1}}の形の無限基数を\emph{後続基数}、そうでないものを\emph{極限基数}と呼ぶ。}<>
-        +pitem(from 5){基数${\kappa}に対し、${2^\kappa \defeq \pabs{\Pow(\kappa)}}を${\kappa} の\emph{冪}と呼ぶ。}<
-          +pitem(from 6){${\omega_\alpha}や${\kappa^+}, ${2^\kappa}は宇宙にどういう集合があるのかによって値がかわる！}<>
-          +pitem(from 7){実際、\emph{強制法}や\emph{内部モデル}を考えると結構自在に変えられる}<>
+        +item{基数の全体は整列されており${\On}と同型になる。そこで、\emph{無限基数}を小さい順に${\alef_0, \alef_1, \ldots, \alef_{\omega}, \alef_{\omega + 1}, \ldots}または${\omega_0, \omega_1, \ldots, \omega_{\omega}, \omega_{\omega + 1}, \ldots}と書く。}<>
+        +item{基数${\kappa}より大きな最小の基数を${\kappa^+}で表し、${\kappa}の\emph{後続基数}と呼ぶ。}<>
+        +item{${\kappa = \alef_{\alpha + 1}}の形の無限基数を\emph{後続基数}、そうでないものを\emph{極限基数}と呼ぶ。}<>
+        +item{基数${\kappa}に対し、${2^\kappa \defeq \pabs{\Pow(\kappa)}}を${\kappa} の\emph{冪}と呼ぶ。}<
+          +item{${\omega_\alpha}や${\kappa^+}, ${2^\kappa}は宇宙にどういう集合があるのかによって値がかわる！}<>
+          +item{実際、\emph{強制法}や\emph{内部モデル}を考えると結構自在に変えられる}<>
         >
       >
     >
