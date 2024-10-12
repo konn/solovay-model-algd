@@ -667,7 +667,7 @@ in document '<
         +p{${M}を${(2^{ℵ_0})^M < ℵ_1}を満たす内部モデルとする。実数の集合${A \subseteq \R}が\emph{${M}上Solovayなら}、次が成立：}
         +eqn?:(AZMathEquation.notag)(${
           \exists B \in \Borels \mhquad
-          \forall x \in \R: M\text!{上ランダム} \mhquad
+          \forall x \in \R: M\text!{上ランダム\emph{っぽい}} \mhquad
             \pB{x \in A \iff x \in B}
         });
       >
@@ -1101,5 +1101,25 @@ in document '<
       +centering{\fontsize(90pt){ございました}}
     >
     +againframe(`matome`);
+  >
+  
+  +section{|補遺|}<
+    +frame-nofooter{${\ZF+\LM+\lnot\CC}には到達不能基数は不要}<
+      +itemize<
+        +item{軽く触れたように、\emph{${\CC}を諦めれば到達不能基数は不要}}<>
+        +item{Solovayモデルとの違い}<
+          +item?:(dot-arabic){${\kappa}を到達不能基数とする代わりに、${\kappa \defeq ℶ_ω}として${\kappa}を${\omega_1}に潰して、
+            \eqn?:(AZMathEquation.notag)(${ℶ_0 \defeq ℵ_0,\mquad ℶ_{α + 1} \defeq 2^{ℶ_α}, \mquad ℶ_γ \defeq \sup_{α < γ} ℶ_α\mhquad(γ: \text!{limit})});
+          }<>
+          +item?:(dot-arabic){${\HOD^\omega}の構成を途中の宇宙から来ている${\omega}-列だけを使うよう修正：
+
+          \eqn?:(AZMathEquation.notag)(${\p{\HOD^\omega}* \defeq \HOD\p{\Set{\sigma : \omega \to \On}{\exists \lambda < \kappa\mhquad \sigma \in V[G \restr \lambda]})}});
+          }<
+            +item{こうすると${\DC}や${\CC}を満たすとは限らなくなる}<>
+            >
+          +item{${V[G]}と${\p{\HOD^ω}*}で実数が一致するとは限らないが、\thmref(`lem:solovay`);でのBorel集合の作り方を見るとこれで十分なことがわかる}<>
+        >
+      >
+    >
   >
 >
