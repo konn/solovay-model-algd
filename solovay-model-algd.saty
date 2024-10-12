@@ -667,7 +667,7 @@ in document '<
         +p{${M}を${(2^{ℵ_0})^M < ℵ_1}を満たす内部モデルとする。実数の集合${A \subseteq \R}が\emph{${M}上Solovayなら}、次が成立：}
         +eqn?:(AZMathEquation.notag)(${
           \exists B \in \Borels \mhquad
-          \forall x \in \R: M\text!{上ランダム\emph{っぽい}} \mhquad
+          \forall x \in \R: M\text!{上ランダム} \mhquad
             \pB{x \in A \iff x \in B}
         });
       >
