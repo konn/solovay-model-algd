@@ -42,7 +42,7 @@ open SlydifiThemeArctic
 open Colorbox
 
 % 発表用でないとき
-let screen-mode = false
+let screen-mode = true
 
 % 発表時のみ phantom、配付用では sticky
 let from-talk n l = screen-mode || from n l
@@ -827,7 +827,7 @@ in document '<
       >
     >
 
-    +frame-nofooter?:(on-talk 7){Levy崩壊のイメージ}<
+    +frame-nofooter?:(7){Levy崩壊のイメージ}<
       +centering{\small{\emph{${\star}} ${\kappa}：到達不能、${\lambda < \kappa}：正則とする}}
       +centering(
         open List in open TikZyFi in 
