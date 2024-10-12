@@ -1078,7 +1078,7 @@ in document '<
       +itemize<
         +item{Solovay\cite[`Solovay:1970`];は${\ZF+\DC+\text!{任意の実数の集合が可測}}のモデルを与えた}<
           +item{\emph{到達不能基数}${\kappa}の存在を仮定し、\emph{それを${\omega_1}に潰した宇宙}を考え、\emph{その中の${\HOD^\omega}を見る}、という段階を踏んだ}<>
-          +item{到達不能基数は、${\HOD^\omega}に属す集合が殆どいたるところ「\emph{ランダム}」で、\emph{ランダム実数上はBorel集合と一致する}ようにするのに必要}<>
+          +item{到達不能基数の使いどころ：${\HOD^\omega}に属す集合が殆どいたるところ「\emph{ランダム}」で、\emph{ランダム実数上はBorel集合と一致する}ようにするのに必要}<>
           +item{Solovayモデルでは、他にも任意の実数の集合がBaireの性質などイデアルで一般化された正則性を持つ}<>
         >
         +item{Shelah\cite[`Shelah:1984`];は、Baire性には到達不能基数が要らないことを示しつつ、任意といわず\emph{${\mathbf{\Sigma}^1_3}-可測性に本質的に到達不能基数が必要}であることを示した}<>
@@ -1095,13 +1095,6 @@ in document '<
         (bibyfi-theme)(references);
       >
     >
-    +frame-nofooter{}<
-      +vspace(2.5mm);
-      +centering{\fontsize(90pt){御清聴}}
-      +centering{\fontsize(90pt){ありがとう}}
-      +centering{\fontsize(90pt){ございました}}
-    >
-    +againframe(`matome`);
   >
   
   +section{|補遺|}<
