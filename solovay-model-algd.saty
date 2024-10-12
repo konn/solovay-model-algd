@@ -61,13 +61,16 @@ let-inline ctx \url url =
   { \href(url)({\uline(embed-string url);}); }
 let-inline ctx \thmref key = 
   match get-cross-reference key with
-    | Some(label) -> read-inline ctx (embed-string label)
+    | Some(label) -> 
+        inline-frame-breakable (2pt, 2pt, 2pt, 2pt) (Annot.link-to-location-frame key (Some(2pt, green-color)))
+        (read-inline ctx (embed-string label))
     | None -> read-inline ctx { (??) }
 
 let-inline ctx \eqref key = 
   match get-cross-reference (`eq:` ^ key ^ `:num`) with
     | Some(label) -> 
-      read-inline ctx (embed-string (`(` ^ label ^ `)`))
+    inline-frame-breakable (2pt, 2pt, 2pt, 2pt) (Annot.link-to-location-frame key None)
+      (read-inline ctx (embed-string (`(` ^ label ^ `)`)))
     | None -> read-inline ctx { (??) }
 
 let make-theorem ctx header tag ?:title ?:opts blk =
@@ -84,13 +87,16 @@ let make-theorem ctx header tag ?:title ?:opts blk =
   let txt-header = header ^ arabic num in
   let () =
         if to-register 
-        then register-cross-reference tag txt-header
+        then register-cross-reference tag txt-header 
         else ()
   in
+  let with-anchor ctx bdy = 
+        block-frame-breakable ctx (0pt, 0pt, 0pt, 0pt) (Annot.register-location-frame tag) (fun ctx -> read-block ctx bdy)
+      in
   let str-title = embed-string txt-header in
   let ib-title =
         match title with
-        | None ->   {#str-title;}
+        | None -> {#str-title;}
         | Some(title) -> {#str-title; (#title;)}
   in
   let user-opts = match opts with
@@ -101,8 +107,8 @@ let make-theorem ctx header tag ?:title ?:opts blk =
         fonttitle [bold]; colframe emph-color;
         left 10pt; right 10pt; top 10pt;bottom 10pt;
         ]
-  in
-  read-block ctx '<
+        
+  in with-anchor ctx '<
     +colorbox 
       (opts)
       ?:(ib-title)
