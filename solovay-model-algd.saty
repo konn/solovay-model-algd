@@ -911,6 +911,7 @@ in document '<
         +pitem(from 4){議論を一般化してやると、${I}が\emph{${\sigma}-飽和性}や\emph{強い適正性}という性質を満たす場合、\emph{Solovayモデルで任意の実数の集合が${I}-正則性を持つ}（Khomskii\cite[`Khomskii:2012`];）}<
           +pitem(from 5){\small{\inactive{（Khomskii\cite[`Khomskii:2012`];では単純に${I^+}が適正ならよいとされているが、実はもうちょっと条件が要る）}}}<>
           +pitem(from 6){実は「任意の実数の集合が\emph{Baireの性質}を持つ（${\BP}）」という命題単体には\emph{到達不能基数は不要}であることが知られている（Shelah\cite[`Shelah:1984`];）}<
+            +pitem(from 6){\small{\inactive{雰囲気は大昔に書いたスライド\cite[`Ishii:2016-sweet`];が参考になるかも}}}<>
             +pitem(from 7){Shelah\cite[`Shelah:1984`];のモデルは${\CH}も満たす。${\ZF+\DC+\BP+\mtextcolor!(emph-color){\lnot \CH}}の無矛盾性が到達不能基数なしで言えるかは未解決（一度アナウンスされたが取り下げられた）}<>
             >
         >
@@ -1085,8 +1086,8 @@ in document '<
       >
     >
     +frame-nofooter{References}<
-      +font-style[font-size 13pt]<
-              +makebibliography 
+      +font-style[font-size 12pt]<
+        +makebibliography 
         ?:(|sort-references=true; 
             citestyle=CiteAsNumber;
             name-shrink=true;

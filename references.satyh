@@ -2,6 +2,10 @@
 @require: class-slydifi/theme/arctic
 @require: fss/fss
 
+let-inline ctx \url url = 
+  read-inline (ctx |> set-font Latin (`system:JetBrainsMono-Medium`, .8, 0.)) 
+  { \href(url)({\uline(embed-string url);}); }
+
 let references = [
   (`Solovay:1970`,
     Article(|
@@ -55,7 +59,11 @@ let references = [
   )
   ; ( `Ishii:2016`
     , WildCard
-      {Hiromi Ishii, On Regularity Properties of Set of Reals and Inaccessible Cardinals”. Master thesis. Tsukuba University, 2016.}
+      {Hiromi Ishii, “On Regularity Properties of Set of Reals and Inaccessible Cardinals”. Master thesis. Tsukuba University, 2016.}
+  )
+  ; ( `Ishii:2016-sweet`
+    , WildCard
+      {石井大海, “On Projective Baire Property”. URL: \url(`https://konn-san.com/math/projective-baire-fmyg16.pdf`);, 数学基礎論若手の会2016における講演. 2016.}
   )
   ;(`Wright:1977`,
     InProceedings(|
